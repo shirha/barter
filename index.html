@@ -123,6 +123,7 @@ document.getElementById("spot").onchange = function(event){
   event.target.value = spot.toFixed(3);
   event.target.blur();
   amt  = parseFloat(document.getElementById("amt").value);
+  // https://youtu.be/xniXT04Q8RE?t=55
   db["nick"]["count"]  = Math.floor(amt / (spot * .7234 * .05));
   db["quar"]["count"]  = Math.floor(db["nick"]["count"] / 5); 
   db["nick"]["count"] -= Math.floor(db["quar"]["count"] * 5);
