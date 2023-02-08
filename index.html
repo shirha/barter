@@ -76,7 +76,8 @@ let db = {
     "dime": {"fract": .10, "count": 0, "price": 0, "total": 0}, 
     "nick": {"fract": .05, "count": 0, "price": 0, "total": 0}  // no 90% nickels; a nickel is the LCD
   },
-  spot = 24.444, amt,
+  // coinflation.com 90% @ .7234 (or .715 troy oz / $1 face for wear)
+  spot = 24.444, amt, troy = .7234, 
   face = document.getElementById("face_total"),
   grand = document.getElementById("grand_total"),
   myHeaders = new Headers(),
@@ -124,7 +125,7 @@ document.getElementById("spot").onchange = function(event){
   event.target.blur();
   amt  = parseFloat(document.getElementById("amt").value);
   // https://youtu.be/xniXT04Q8RE?t=55
-  db["nick"]["count"]  = Math.floor(amt / (spot * .7234 * .05));
+  db["nick"]["count"]  = Math.floor(amt / (spot * troy * .05));
   db["quar"]["count"]  = Math.floor(db["nick"]["count"] / 5); 
   db["nick"]["count"] -= Math.floor(db["quar"]["count"] * 5);
   if(db["quar"]["count"] > 0 && db["nick"]["count"] % 2 != 0){
@@ -152,14 +153,14 @@ function fn(e){
 
   let key = td[1].id;
   db[key]["count"] = Math.max(0, parseFloat(db[key]["count"] + inc));
-  db[key]["price"] =(db[key]["fract"] * spot * .7234);
+  db[key]["price"] =(db[key]["fract"] * spot * troy);
   db[key]["total"] =(db[key]["count"] * db[key]["price"]);
   td[1].innerHTML  = db[key]["count"];
   td[4].innerHTML  = db[key]["price"].toFixed(3);
   td[6].innerHTML  = db[key]["total"].toFixed(2);
 
   grand.innerHTML  = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
-  face.innerHTML   = (amt / (spot * .7234)).toFixed(2);
+  face.innerHTML   = (amt / (spot * troy)).toFixed(2);
 }
 
 if(localStorage.getItem("token") === null ){ console.log("NULL token");
