@@ -53,6 +53,7 @@
     }
 
     #dollar {font-size: 12px; vertical-align: text-bottom; margin-top: 40px;}
+    hr {margin:5px 0;}
 /*  * {border: 1px solid black; border-collapse: collapse;} */
     @media only screen and (max-width: 500px) {
       h2 {margin: 10px;}
@@ -70,21 +71,29 @@
   <div class="l h"><h2>Silver Barter</h2></div></td></tr>
 <tr><td colspan="7">
   <div class="l">Spot:&nbsp;<input id="spot" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
-  <div class="r">Amt:&nbsp;<input id="amt"inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value="28.00"></div></td></tr>
+  <div class="r">Amt:&nbsp;<input id="amt" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value="28.00"></div></td></tr>
 <tr><td colspan="7"><img id="half_img" src="half-dollar-kennedy.png"></td></tr>
 <tr><td><button>+</button></td><td id="half" class="face">1</td><td><button>-</button></td><td>×</td><td id="half_price">10.60</td><td>=</td><td id="half_total">10.60</td></tr>  
 <tr><td colspan="7"><img id="quar_img" src="quarter-washington.png"></td></tr>
 <tr><td><button>+</button></td><td id="quar" class="face">1</td><td><button>-</button></td><td>×</td><td id="quar_price">5.30</td><td>=</td><td id="quarter_total">5.30</td></tr>  
 <tr><td colspan="7"><img id="dime_img" src="dime-roosevelt.png"></td></tr>
 <tr><td><button>+</button></td><td id="dime" class="face">1</td><td><button>-</button></td><td>×</td><td id="dime_price">2.12</td><td>=</td><td id="dime_total">2.12</td></tr>  
-<tr><td colspan="7">&nbsp;</td></tr>
 <tr><td colspan="7">
   <div class="l">Face:<div id="face_total"></div></div>
   <div class="l">ozt:<div id="troy_ounce">2.1</div></div>
   <div class="r">Total:<div id="grand_total"></div></div></td></tr>
-<tr><td colspan="7">&nbsp;</td></tr>
-  <!-- https://codepen.io/alexandredees/pen/DbXggK -->
+<tr><td colspan="7"><hr>
+  <div class=l style="margin-left:25px;">$1 face of 
+    <input type="radio" id="junk" name="type" value=".7234" checked><label for="html">junk</label>
+    <input type="radio" id="doll" name="type" value=".7734"><label for="html">dollar</label>
+    <input type="radio" id="bull" name="type" value="1"><label for="html">bullion</label></div><br>
+  <div class="l"><label for="price">Price: </label>
+    <input id="price" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value=""></div>
+  <div class="r"><label for="prem">Prem: </label>
+    <input id="prem" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.blur();" value="" readonly></div></div><br>&nbsp;
+</td></tr>
 </table></div>
+  <!-- https://codepen.io/alexandredees/pen/DbXggK -->
 <script>
 
 // https://www.goldapi.io/dashboard - barter/misc/_token.txt
@@ -133,6 +142,22 @@ for(let i = 0; i < e.length; i++){
     ozt.innerHTML = (n * troy).toFixed(2);     
     // offsetCenter();
   });
+};
+
+document.getElementById("price").onchange = function(event){
+  let price  = event.target.value;
+  let factor = document.querySelector('input[name="type"]:checked').value;
+  let prem   = document.getElementById("prem");
+  if(price == '' || price == '0'){
+    prem.value = '';
+    event.target.value = '';
+  }else{
+    prem.value = parseFloat((price/(factor*spot)-1)*100).toFixed(1) +"%";
+    event.target.value = parseFloat(price).toFixed(2);
+  }
+  event.target.blur();
+  // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
+  // render();
 };
 
 document.getElementById("amt").onchange = function(event){
@@ -191,6 +216,8 @@ function fn(e){
   face.innerHTML   = (n).toFixed(2);
   ozt.innerHTML = (n * troy).toFixed(2);
   offsetCenter();
+  // document.getElementById("price").value = '';
+  // document.getElementById("prem").value = '';
 }
 
 if(localStorage.getItem("token") === null ){ console.log("NULL token");
