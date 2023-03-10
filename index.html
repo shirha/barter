@@ -62,6 +62,19 @@
     #gold, input[type=button] {text-align: center; border-radius: 6px; font-size: 24px; margin: 3px; border-width: thin;}
 /*  * {border: 1px solid black; border-collapse: collapse;} */
 
+    .center {
+      float:none;
+      position:relative;
+      top: 50%;
+      left: 50%;
+      /*margin-top: -100px;
+      margin-left: -100px;*/
+    }
+    #prem-hd {float:left; margin-left:150px; font-size:24px; font-weight:bold;}
+    #premium                   {background-color: white; border-radius:50%;font-size: 12px; margin:15px 0 0 40px; width:12px; height:12px;float: left; border:1px solid black;}
+    #premium.toggled           {background-color: #FFEA00;}
+    #gold.toggled              {background-color: #FFEA00;}
+    #rnd.toggled, #ken.toggled {background-color: #F8C8DC;}
     #rnd,         #ken         {background-color: #F0F0F0;}
     #rnd.toggled, #ken.toggled {background-color: #F8C8DC;}
     #qua,         #dim         {color: black;}
@@ -96,15 +109,16 @@
   <div class="l">Face:<div id="face_total"></div></div>
   <div class="l">ozt:<div id="troy_ounce">2.1</div></div>
   <div class="r">Total:<div id="grand_total"></div></div></td></tr>
-<tr><td colspan="8"><hr>
+<tr><td colspan="8"><hr><div id="prem-hd">Premiums</div><br><hr>
   <div class=l style="margin-left:25px;">$1 face of 
     <input type="radio" id="junk" name="type" value=".7234" checked><label for="html">junk</label>
     <input type="radio" id="doll" name="type" value=".7734"><label for="html">dollar</label>
     <input type="radio" id="bull" name="type" value="1"><label for="html">bullion</label></div><br>
   <div class="l"><label for="price">Price: </label>
     <input id="price" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value=""></div>
+    <div class="l" id="premium">&nbsp;</div>
   <div class="r"><label for="prem">Prem: </label>
-    <input id="prem" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.blur();" value="" readonly></div></div><br>&nbsp;
+    <input id="prem" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value=""></div></div><br>&nbsp;
 </td></tr>
 </table></div>
   <!-- https://codepen.io/alexandredees/pen/DbXggK -->
@@ -125,6 +139,10 @@ let db = {
   grand = document.getElementById("grand_total"),
   rnd = document.getElementById("rnd"),
   ken = document.getElementById("ken"),
+  premium = document.getElementById('premium'),
+  gold = document.getElementById('gold'),
+  prem = document.getElementById("prem"),
+  pric = document.getElementById("price"),
   myHeaders = new Headers(),
   requestOptions = {
   method: 'GET',
@@ -161,18 +179,40 @@ for(let i = 0; i < e.length; i++){
   });
 };
 
-document.getElementById("price").onchange = function(event){
-  let price  = event.target.value;
+pric.onchange = function(event){
+  // let price  = event.target.value;
   let factor = document.querySelector('input[name="type"]:checked').value;
-  let prem   = document.getElementById("prem");
-  if(price == '' || price == '0'){
+  if(pric.value == '' || pric.value == '0'){
     prem.value = '';
-    event.target.value = '';
+    pric.value = '';
   }else{
-    prem.value = parseFloat((price/(factor*spot)-1)*100).toFixed(1) +"%";
-    event.target.value = parseFloat(price).toFixed(2);
+    if(premium.className == "toggled"){
+      prem.value = parseFloat((pric.value/(gold.value)-1)*100).toFixed(1) +"%";
+    } else {
+      prem.value = parseFloat((pric.value/(factor*spot)-1)*100).toFixed(1) +"%";
+    }
+    pric.value = parseFloat(pric.value).toFixed(2);
   }
-  event.target.blur();
+  pric.blur();
+  // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
+  // render();
+};
+
+prem.onchange = function(event){
+  let pct  = prem.value.replace(/%/,'');
+  let factor = document.querySelector('input[name="type"]:checked').value;
+  if(pct == '' || pct == '0'){
+    prem.value = '';
+    pric.value = '';
+  }else{
+    if(premium.className == "toggled"){
+      pric.value = parseFloat(gold.value*(1+pct/100)).toFixed(2);
+    } else {factor*spot
+      pric.value = parseFloat(factor*spot*(1+pct/100)).toFixed(2);
+    }
+    prem.value = parseFloat(pct).toFixed(1) +"%";
+  }
+  prem.blur(); // event.target
   // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
   // render();
 };
@@ -264,8 +304,8 @@ if(localStorage.getItem("token") === null ){ console.log("NULL token");
     .then(response => response.text())
     .then(result => { 
       console.log(result);
-      gold = parseFloat((JSON.parse(result))["price"]); 
-      document.getElementById("gold").value = gold;
+      let price = parseFloat((JSON.parse(result))["price"]); 
+      gold.value = price;
       // render();
     })
     .catch(error => {
@@ -288,33 +328,6 @@ if(localStorage.getItem("token") === null ){ console.log("NULL token");
       render();
     });
 }
-let next = {
-"dime-roosevelt.png": "dime-mercury.png",
-"dime-mercury.png": "dime-barber.png",
-"dime-barber.png": "dime-seated-liberty.png",
-"dime-seated-liberty.png": "dime-capped-bust.png",
-"dime-capped-bust.png": "dime-draped-bust.png",
-"dime-draped-bust.png": "dime-roosevelt.png",
- 
-"quarter-washington.png": "quarter-standing-liberty.png",
-"quarter-standing-liberty.png": "quarter-barber.png",
-"quarter-barber.png": "quarter-seated-liberty.png",
-"quarter-seated-liberty.png": "quarter-capped-bust.png",
-"quarter-capped-bust.png": "quarter-draped-bust.png",
-"quarter-draped-bust.png": "quarter-draped-bust-heraldic.png",
-"quarter-draped-bust-heraldic.png": "quarter-washington.png",
- 
-"half-dollar-kennedy.png": "half-dollar-franklin.png",
-"half-dollar-franklin.png": "half-dollar-walking-liberty.png",
-"half-dollar-walking-liberty.png": "half-dollar-barber.png",
-"half-dollar-barber.png": "half-dollar-seated-liberty.png",
-"half-dollar-seated-liberty.png": "half-dollar-seated-liberty-motto.png",
-"half-dollar-seated-liberty-motto.png": "half-dollar-capped-bust.png",
-"half-dollar-capped-bust.png": "half-dollar-draped-bust.png",
-"half-dollar-draped-bust.png": "half-dollar-draped-bust-heraldic.png",
-"half-dollar-draped-bust-heraldic.png": "half-dollar-flowing-hair.png",
-"half-dollar-flowing-hair.png": "half-dollar-kennedy.png"
-};
 e = document.getElementsByTagName("img");
 for(let i = 0; i < e.length; i++){
   e[i].addEventListener("click", function(event){ 
@@ -335,6 +348,11 @@ rnd.addEventListener('click', function (event) {
 ken.addEventListener('click', function (event) {
   event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
   render();
+});
+premium.addEventListener('click', function (event) {
+  event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
+  gold.className = 'toggled' == gold.className ? '' : 'toggled';
+  // render();
 });
 /*
   https://www.ngccoin.com/price-guide/coin-melt-values.aspx
