@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="mobile-web-app-capable" content="yes">
-  <link rel="manifest" href="manifest.json">
+  <!--link rel="manifest" href="manifest.json"-->
   <link rel="shortcut icon" type="image/png" href="favicon-512.png">
   <title>Barter</title>
   <style>
@@ -18,7 +18,11 @@
     td:nth-child(5) {min-width: 74px; padding: 0 10px;}
     td:nth-child(4) {padding-left: 10px;}
     td:nth-child(7) {min-width: 116px; padding: 0 10px;}
-    tr:nth-child(8),tr:nth-child(9) {background-color: rgba(246,244,240,.9);}
+    tr:nth-child(11),tr:nth-child(12) {background-color: rgba(246,244,240,.9);}
+    tr:nth-child(4) td:nth-child(1) {text-align: center;}
+    tr:nth-child(6) td:nth-child(1) {text-align: center;}
+    tr:nth-child(8) td:nth-child(1) {text-align: center;}
+    tr:nth-child(10) td:nth-child(1) {text-align: center;}
     button {min-width: 32px;}
     button {min-width: 32px;}
     #half_img {display: block; margin:5px auto; height: 186px;}
@@ -55,7 +59,12 @@
 
     #dollar {font-size: 12px; vertical-align: text-bottom; margin-top: 40px;}
     hr {margin:5px 0;}
+    #gold, input[type=button] {text-align: center; border-radius: 6px; font-size: 24px; margin: 3px; border-width: thin;}
 /*  * {border: 1px solid black; border-collapse: collapse;} */
+
+    #rnd,         #ken         {background-color: #F0F0F0;}
+    #rnd.toggled, #ken.toggled {background-color: #F8C8DC;}
+    #qua,         #dim         {color: black;}
     @media only screen and (max-width: 500px) {
       h2 {margin: 10px;}
       #dollar {font-size: 12px; vertical-align: text-bottom; margin-top: 20px;}
@@ -70,20 +79,24 @@
 <tr><td colspan="7">
   <div class="l" id="dollar">🟢</div>
   <div class="l h"><h2>Silver Barter</h2></div></td></tr>
-<tr><td colspan="7">
+<tr><td colspan="8">
+  <div class="l">Gold:&nbsp;<input id="gold" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"  disabled></div>
+<tr><td colspan="8">
   <div class="l">Spot:&nbsp;<input id="spot" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
   <div class="r">Amt:&nbsp;<input id="amt" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value="28.00"></div></td></tr>
-<tr><td colspan="7"><img id="half_img" src="half-dollar-kennedy.png"></td></tr>
+<tr><td colspan="8"><input type=button value="Silver Rounds" id="rnd"></td></tr>
+<tr><td><button>+</button></td><td id="dolr" class="face">1</td><td><button>-</button></td><td>×</td><td id="dolr_price">10.60</td><td>=</td><td id="dolr_total">10.60</td></tr>  
+<tr><td colspan="8"><input type=button value="Half-Dollars" id="ken"></td></tr>
 <tr><td><button>+</button></td><td id="half" class="face">1</td><td><button>-</button></td><td>×</td><td id="half_price">10.60</td><td>=</td><td id="half_total">10.60</td></tr>  
-<tr><td colspan="7"><img id="quar_img" src="quarter-washington.png"></td></tr>
+<tr><td colspan="8"><input type=button value="Quarters" disabled id="qua"></td></tr>
 <tr><td><button>+</button></td><td id="quar" class="face">1</td><td><button>-</button></td><td>×</td><td id="quar_price">5.30</td><td>=</td><td id="quarter_total">5.30</td></tr>  
-<tr><td colspan="7"><img id="dime_img" src="dime-roosevelt.png"></td></tr>
+<tr><td colspan="8"><input type=button value="Dimes" disabled id="dim"></td></tr>
 <tr><td><button>+</button></td><td id="dime" class="face">1</td><td><button>-</button></td><td>×</td><td id="dime_price">2.12</td><td>=</td><td id="dime_total">2.12</td></tr>  
-<tr><td colspan="7">
+<tr><td colspan="8">
   <div class="l">Face:<div id="face_total"></div></div>
   <div class="l">ozt:<div id="troy_ounce">2.1</div></div>
   <div class="r">Total:<div id="grand_total"></div></div></td></tr>
-<tr><td colspan="7"><hr>
+<tr><td colspan="8"><hr>
   <div class=l style="margin-left:25px;">$1 face of 
     <input type="radio" id="junk" name="type" value=".7234" checked><label for="html">junk</label>
     <input type="radio" id="doll" name="type" value=".7734"><label for="html">dollar</label>
@@ -99,6 +112,7 @@
 
 // https://www.goldapi.io/dashboard - barter/misc/_token.txt
 let db = {
+    "dolr": {"fract": 1.3986, "count": 0, "price": 0, "total": 0},
     "half": {"fract": .50, "count": 0, "price": 0, "total": 0},
     "quar": {"fract": .25, "count": 0, "price": 0, "total": 0}, 
     "dime": {"fract": .10, "count": 0, "price": 0, "total": 0}, 
@@ -109,6 +123,8 @@ let db = {
   face = document.getElementById("face_total"),
   ozt  = document.getElementById("troy_ounce"),
   grand = document.getElementById("grand_total"),
+  rnd = document.getElementById("rnd"),
+  ken = document.getElementById("ken"),
   myHeaders = new Headers(),
   requestOptions = {
   method: 'GET',
@@ -125,7 +141,7 @@ function offsetCenter(){
 function render(){
   let evt = document.createEvent("HTMLEvents");
   evt.initEvent("change", false, true);
-  // console.log("event", evt);
+  console.log("event", evt);
   document.getElementById("spot").dispatchEvent(evt);
 }
 
@@ -179,6 +195,14 @@ document.getElementById("spot").onchange = function(event){
   amt  = parseFloat(document.getElementById("amt").value);
   // https://youtu.be/xniXT04Q8RE?t=55
   db["nick"]["count"]  = Math.floor(amt / (spot * troy * .05));
+
+  if(rnd.className != 'toggled'){
+    db["dolr"]["count"]  = Math.floor(db["nick"]["count"] / 28); 
+    db["nick"]["count"] -= Math.floor(db["dolr"]["count"] * 28);
+  }else{
+    db["dolr"]["count"]  = 0;
+  }
+
   db["quar"]["count"]  = Math.floor(db["nick"]["count"] / 5); 
   db["nick"]["count"] -= Math.floor(db["quar"]["count"] * 5);
   if(db["quar"]["count"] > 0 && db["nick"]["count"] % 2 != 0){
@@ -187,11 +211,16 @@ document.getElementById("spot").onchange = function(event){
   }
   db["dime"]["count"]  = Math.floor(db["nick"]["count"] / 2);  
   db["nick"]["count"] -= Math.floor(db["dime"]["count"] * 2);
-  db["half"]["count"]  = Math.floor(db["quar"]["count"] / 2);  
-  db["quar"]["count"] -= Math.floor(db["half"]["count"] * 2);
+
+  if(ken.className != 'toggled'){
+    db["half"]["count"]  = Math.floor(db["quar"]["count"] / 2);  
+    db["quar"]["count"] -= Math.floor(db["half"]["count"] * 2);
+  }else{
+    db["half"]["count"]  = 0;
+  }
 
   let e = document.querySelectorAll('tr');
-  [e[3], e[5], e[7]].forEach(e => fn(e));
+  [e[4],e[6], e[8], e[10]].forEach(e => fn(e));
 };
 
 function fn(e){
@@ -205,6 +234,7 @@ function fn(e){
   }
 
   let key = td[1].id;
+  console.log(`key= ${key}`)
   db[key]["count"] = Math.max(0, parseFloat(db[key]["count"] + inc));
   db[key]["price"] =(db[key]["fract"] * spot * troy);
   db[key]["total"] =(db[key]["count"] * db[key]["price"]);
@@ -229,6 +259,20 @@ if(localStorage.getItem("token") === null ){ console.log("NULL token");
 }else{
   myHeaders.append("x-access-token", localStorage.getItem("token"));
   myHeaders.append("Content-Type", "application/json");
+
+  fetch("https://www.goldapi.io/api/XAU/USD", requestOptions)
+    .then(response => response.text())
+    .then(result => { 
+      console.log(result);
+      gold = parseFloat((JSON.parse(result))["price"]); 
+      document.getElementById("gold").value = gold;
+      // render();
+    })
+    .catch(error => {
+      console.log('error', error);
+      // document.getElementById("spot").classList.add("warn");
+      // render();
+    });
 
   fetch("https://www.goldapi.io/api/XAG/USD", requestOptions)
     .then(response => response.text())
@@ -282,6 +326,14 @@ for(let i = 0; i < e.length; i++){
 document.getElementById('dollar')
 .addEventListener('click', function (event) {
   document.getElementById("spot").value = 27.972;
+  render();
+});
+rnd.addEventListener('click', function (event) {
+  event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
+  render();
+});
+ken.addEventListener('click', function (event) {
+  event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
   render();
 });
 /*
