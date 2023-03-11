@@ -30,7 +30,7 @@
     #dime_img {display: block; margin:5px auto; height: 109px;}
     #face_total, #troy_ounce, #grand_total {padding: 0 10px;}
     #price, #prem {margin-top: 5px;}
-    #price.warning,#prem.warning {color:red;}
+    #price.warning, #prem.warning {color:red;}
     table {
       background-image: url("cover.jpg");
       background-size: 100% 100%;
@@ -58,7 +58,7 @@
       left: 50%;
     }
 
-    #dollar {font-size: 12px; vertical-align: text-bottom; margin-top: 40px;}
+    #dollar {font-size: 12px; vertical-align: text-bottom; margin-top: 40px; cursor: default;}
     hr {margin:5px 0;}
     #gold, input[type=button] {text-align: center; border-radius: 6px; font-size: 24px; margin: 3px; border-width: thin;}
 /*  * {border: 1px solid black; border-collapse: collapse;} */
@@ -79,6 +79,7 @@
     #rnd,         #ken         {background-color: #F0F0F0;}
     #rnd.toggled, #ken.toggled {background-color: #F8C8DC;}
     #qua,         #dim         {color: black;}
+    #fbp {font-size: 12px; vertical-align: top;};
     @media only screen and (max-width: 500px) {
       h2 {margin: 10px;}
       #dollar  {font-size: 12px; vertical-align: text-bottom; margin-top: 20px;}
@@ -93,6 +94,7 @@
   <div class="l h"><h2>Silver Barter</h2></div></td></tr>
 <tr><td colspan="8">
   <div class="l">Gold:&nbsp;<input id="gold" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"  disabled></div>
+  <a id=fbp href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" target="_blank">FindBullionPrices</a></td>
 <tr><td colspan="8">
   <div class="l">Spot:&nbsp;<input id="spot" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
   <div class="r">Amt:&nbsp;<input id="amt" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value="28.00"></div></td></tr>
@@ -117,7 +119,8 @@
     <input id="price" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value=""></div>
     <div class="l" id="premium">&nbsp;</div>
   <div class="r"><label for="prem">Prem: </label>
-    <input id="prem" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value=""></div></div><br>&nbsp;
+    <input id="prem" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value=""></div></div>
+    <br>&nbsp;
 </td></tr>
 </table></div>
   <!-- https://codepen.io/alexandredees/pen/DbXggK -->
@@ -181,31 +184,28 @@ for(let i = 0; i < e.length; i++){
 pric.onchange = function(event){
   let pct, factor = document.querySelector('input[name="type"]:checked').value;
   if(pric.value == '' || pric.value == '0'){
-    prem.value = '';
-    pric.value = '';
+    clrPrem();
     return false;
   }
+  pric.className = '';
+  prem.className = '';
   if(premium.className == "toggled"){
-    pct = parseFloat((pric.value/(gold.value)-1)*100);
+    pct = parseFloat((pric.value/gold.value-1)*100);
     if(pct < 0 || pct > 100){
       pric.className = 'warning';
-    }else{
-      pric.className = '';
-      prem.value = pct.toFixed(1) +"%";
-      pric.value = parseFloat(pric.value).toFixed(2);
     }
+    prem.value = pct.toFixed(1) +"%";
+    pric.value = parseFloat(pric.value).toFixed(2);
   }else{
-    pct = (pric.value/(factor*spot)-1)*100;
-    if(pct < 0 || pct > 100){
+    pct = parseFloat(pric.value/(factor*spot)-1)*100;
+    if(pct < 0 || pct > 200){
       pric.className = 'warning';
-    }else{
-      pric.className = '';
-      prem.value = pct.toFixed(1) +"%";
-      pric.value = parseFloat(pric.value).toFixed(2);
     }
+    prem.value = pct.toFixed(1) +"%";
+    pric.value = parseFloat(pric.value).toFixed(2);
   }
-  // }
   pric.blur();
+  prem.blur(); // event.target
   // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
   // render();
 };
@@ -214,19 +214,18 @@ prem.onchange = function(event){
   let pct  = prem.value.replace(/%/,'');
   let factor = document.querySelector('input[name="type"]:checked').value;
   if(pct == '' || pct == '0'){
-    prem.value = '';
-    pric.value = '';
-  }else{
-    if(premium.className == "toggled"){
-      pric.value = parseFloat(gold.value*(1+pct/100)).toFixed(2);
-    } else {factor*spot
-      pric.value = parseFloat(factor*spot*(1+pct/100)).toFixed(2);
-    }
-    prem.value = parseFloat(pct).toFixed(1) +"%";
+    clrPrem();
+    return false;
   }
+  clrPrem();
+  if(premium.className == "toggled"){
+    pric.value = parseFloat(gold.value*(1+pct/100)).toFixed(2);
+  }else{
+    pric.value = parseFloat(factor*spot*(1+pct/100)).toFixed(2);
+  }
+  prem.value = parseFloat(pct).toFixed(1) +"%";
   prem.blur(); // event.target
   // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
-  // render();
 };
 
 document.getElementById("amt").onchange = function(event){
@@ -350,6 +349,8 @@ e = document.querySelectorAll('input[name="type"]');
 for(let i = 0; i < e.length; i++){
   e[i].addEventListener("click", function(event){ 
     clrPrem();
+    premium.className = '';
+    gold.className = '';
   });
 };
 premium.addEventListener('click', function (event) {
