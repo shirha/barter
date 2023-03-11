@@ -136,6 +136,7 @@ let db = {
   },
   // coinflation.com 90% @ .7234 (or .715 troy oz / $1 face for wear)
   spot = 24.444, amt, troy = .715, 
+  pAmt = document.getElementById("amt"),
   face = document.getElementById("face_total"),
   ozt  = document.getElementById("troy_ounce"),
   grand = document.getElementById("grand_total"),
@@ -173,11 +174,11 @@ for(let i = 0; i < e.length; i++){
     fn(event.target);
     let e = document.getElementsByClassName("face"), n = 0;
     for(let i = 0; i < e.length; i++){
-      n += parseFloat(e[i].textContent) * db[e[i].id]["fract"];
+      n += parseFloat(e[i].textContent * db[e[i].id]["fract"]);
     } 
-    face.innerHTML = n.toFixed(2);     
-    ozt.innerHTML = (n * troy).toFixed(2);     
-    // offsetCenter();
+    face.innerHTML = (n - db["dolr"]["count"] * (db["dolr"]["fract"] -1)).toFixed(2);     
+    ozt.innerHTML = (n * troy).toFixed(2);  
+    pAmt.value = Math.floor(parseFloat(grand_total.innerHTML)+1).toFixed(2);   
   });
 };
 
@@ -204,8 +205,8 @@ pric.onchange = function(event){
     prem.value = pct.toFixed(1) +"%";
     pric.value = parseFloat(pric.value).toFixed(2);
   }
-  pric.blur();
-  prem.blur(); // event.target
+  pric.blur(); // event.target
+  prem.blur(); 
   // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
   // render();
 };
@@ -217,7 +218,8 @@ prem.onchange = function(event){
     clrPrem();
     return false;
   }
-  clrPrem();
+  pric.className = '';
+  prem.className = '';
   if(premium.className == "toggled"){
     pric.value = parseFloat(gold.value*(1+pct/100)).toFixed(2);
   }else{
@@ -228,7 +230,7 @@ prem.onchange = function(event){
   // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
 };
 
-document.getElementById("amt").onchange = function(event){
+pAmt.onchange = function(event){
   event.target.value = parseFloat(event.target.value).toFixed(2);
   event.target.blur();
   render();
@@ -243,12 +245,12 @@ document.getElementById("spot").onchange = function(event){
   spot = parseFloat(event.target.value);
   event.target.value = spot.toFixed(3);
   event.target.blur();
-  amt  = parseFloat(document.getElementById("amt").value);
+  amt  = parseFloat(pAmt.value);
   // https://youtu.be/xniXT04Q8RE?t=55
   db["nick"]["count"]  = Math.floor(amt / (spot * troy * .05));
 
   if(rnd.className != 'toggled'){
-    db["dolr"]["count"]  = Math.floor(db["nick"]["count"] / 28); 
+    db["dolr"]["count"]  = Math.floor(db["nick"]["count"] / 28); // 1.40/.05
     db["nick"]["count"] -= Math.floor(db["dolr"]["count"] * 28);
   }else{
     db["dolr"]["count"]  = 0;
@@ -295,11 +297,9 @@ function fn(e){
 
   grand.innerHTML  = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
   let n = amt / (spot * troy);
-  face.innerHTML   = (n).toFixed(2);
+  face.innerHTML = (n - db["dolr"]["count"] * (db["dolr"]["fract"] - 1)).toFixed(2);
   ozt.innerHTML = (n * troy).toFixed(2);
   offsetCenter();
-  // document.getElementById("price").value = '';
-  // document.getElementById("prem").value = '';
 }
 
 if(localStorage.getItem("token") === null ){ console.log("NULL token");
