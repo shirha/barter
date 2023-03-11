@@ -30,6 +30,7 @@
     #dime_img {display: block; margin:5px auto; height: 109px;}
     #face_total, #troy_ounce, #grand_total {padding: 0 10px;}
     #price, #prem {margin-top: 5px;}
+    #price.warning,#prem.warning {color:red;}
     table {
       background-image: url("cover.jpg");
       background-size: 100% 100%;
@@ -71,7 +72,7 @@
       margin-left: -100px;*/
     }
     #prem-hd {float:left; margin-left:150px; font-size:24px; font-weight:bold;}
-    #premium                   {background-color: white; border-radius:50%;font-size: 12px; margin:15px 0 0 40px; width:12px; height:12px;float: left; border:1px solid black;}
+    #premium                   {background-color: white; border-radius:50%;font-size: 12px; margin:15px 0 0 40px; width:12px; height:12px; float: left; border:1px solid black;}
     #premium.toggled           {background-color: #FFEA00;}
     #gold.toggled              {background-color: #FFEA00;}
     #rnd.toggled, #ken.toggled {background-color: #F8C8DC;}
@@ -80,10 +81,8 @@
     #qua,         #dim         {color: black;}
     @media only screen and (max-width: 500px) {
       h2 {margin: 10px;}
-      #dollar {font-size: 12px; vertical-align: text-bottom; margin-top: 20px;}
-      #half_img {display: block; margin:5px auto; height: 140px;}
-      #quar_img {display: block; margin:5px auto; height: 110px;}
-      #dime_img {display: block; margin:5px auto; height:  82px;}
+      #dollar  {font-size: 12px; vertical-align: text-bottom; margin-top: 20px;}
+      #premium {width:14px; height:14px;}
     }
   </style>
 </head>
@@ -180,19 +179,32 @@ for(let i = 0; i < e.length; i++){
 };
 
 pric.onchange = function(event){
-  // let price  = event.target.value;
-  let factor = document.querySelector('input[name="type"]:checked').value;
+  let pct, factor = document.querySelector('input[name="type"]:checked').value;
   if(pric.value == '' || pric.value == '0'){
     prem.value = '';
     pric.value = '';
-  }else{
-    if(premium.className == "toggled"){
-      prem.value = parseFloat((pric.value/(gold.value)-1)*100).toFixed(1) +"%";
-    } else {
-      prem.value = parseFloat((pric.value/(factor*spot)-1)*100).toFixed(1) +"%";
-    }
-    pric.value = parseFloat(pric.value).toFixed(2);
+    return false;
   }
+  if(premium.className == "toggled"){
+    pct = parseFloat((pric.value/(gold.value)-1)*100);
+    if(pct < 0 || pct > 100){
+      pric.className = 'warning';
+    }else{
+      pric.className = '';
+      prem.value = pct.toFixed(1) +"%";
+      pric.value = parseFloat(pric.value).toFixed(2);
+    }
+  }else{
+    pct = (pric.value/(factor*spot)-1)*100;
+    if(pct < 0 || pct > 100){
+      pric.className = 'warning';
+    }else{
+      pric.className = '';
+      prem.value = pct.toFixed(1) +"%";
+      pric.value = parseFloat(pric.value).toFixed(2);
+    }
+  }
+  // }
   pric.blur();
   // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
   // render();
@@ -328,14 +340,23 @@ if(localStorage.getItem("token") === null ){ console.log("NULL token");
       render();
     });
 }
-e = document.getElementsByTagName("img");
+function clrPrem(){
+    pric.value = '';
+    pric.className = '';
+    prem.value = '';
+    prem.className = '';
+}
+e = document.querySelectorAll('input[name="type"]');
 for(let i = 0; i < e.length; i++){
   e[i].addEventListener("click", function(event){ 
-    console.log(e[i].src);
-    let img = e[i].src.match(/[^\/]+$/)[0];
-    e[i].setAttribute('src', next[img]);
+    clrPrem();
   });
 };
+premium.addEventListener('click', function (event) {
+  event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
+  gold.className = 'toggled' == gold.className ? '' : 'toggled';
+  clrPrem();
+});
 document.getElementById('dollar')
 .addEventListener('click', function (event) {
   document.getElementById("spot").value = 27.972;
@@ -348,11 +369,6 @@ rnd.addEventListener('click', function (event) {
 ken.addEventListener('click', function (event) {
   event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
   render();
-});
-premium.addEventListener('click', function (event) {
-  event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
-  gold.className = 'toggled' == gold.className ? '' : 'toggled';
-  // render();
 });
 /*
   https://www.ngccoin.com/price-guide/coin-melt-values.aspx
