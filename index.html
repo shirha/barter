@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="mobile-web-app-capable" content="yes">
-  <!--link rel="manifest" href="manifest.json"-->
+  <link rel="manifest" href="manifest.json">
   <link rel="shortcut icon" type="image/png" href="favicon-512.png">
-  <title>Barter</title>
+  <title>Silver Barter</title>
   <style>
     #container {display: block; max-width: 480px;}
     body {font-size: 24px; font-family: Helvetica;}
@@ -45,32 +45,9 @@
     .m {width:33%}
     .r {float: right;}
     .h {padding-left: 60px;}
-
-    .float_center {
-      float: right;
-
-      position: relative;
-      left: -50%; /* or right 50% */
-      text-align: left;
-    }
-    .float_center > .child {
-      position: relative;
-      left: 50%;
-    }
-
-    #dollar {font-size: 12px; vertical-align: text-bottom; margin-top: 40px; cursor: default;}
     hr {margin:5px 0;}
+    #dollar {font-size: 12px; vertical-align: text-bottom; margin-top: 40px; cursor: default;}
     #gold, input[type=button] {text-align: center; border-radius: 6px; font-size: 24px; margin: 3px; border-width: thin;}
-/*  * {border: 1px solid black; border-collapse: collapse;} */
-
-    .center {
-      float:none;
-      position:relative;
-      top: 50%;
-      left: 50%;
-      /*margin-top: -100px;
-      margin-left: -100px;*/
-    }
     #prem-hd {float:left; margin-left:150px; font-size:24px; font-weight:bold;}
     #premium                   {background-color: white; border-radius:50%;font-size: 12px; margin:15px 0 0 40px; width:12px; height:12px; float: left; border:1px solid black;}
     #premium.toggled           {background-color: #FFD700;}
@@ -79,10 +56,10 @@
     #rnd,         #ken         {background-color: #F0F0F0;}
     #rnd.toggled, #ken.toggled {background-color: #F8C8DC;}
     #qua,         #dim         {color: black;}
-    #fbp {font-size: 12px; vertical-align: top;};
+    #fbp {font-size: 12px; vertical-align: top;}
     @media only screen and (max-width: 500px) {
       h2 {margin: 10px;}
-      #dollar  {font-size: 12px; vertical-align: text-bottom; margin-top: 20px;}
+      #dollar  {margin-top:20px;}
       #premium {width:16px; height:16px;}
     }
   </style>
