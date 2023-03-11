@@ -18,7 +18,7 @@
     td:nth-child(5) {min-width: 74px; padding: 0 10px;}
     td:nth-child(4) {padding-left: 10px;}
     td:nth-child(7) {min-width: 116px; padding: 0 10px;}
-    tr:nth-child(11),tr:nth-child(12) {background-color: rgba(246,244,240,.9);}
+    tr:nth-child(11), tr:nth-child(12) {background-color: rgba(246,244,240,.9);}
     tr:nth-child(4) td:nth-child(1) {text-align: center;}
     tr:nth-child(6) td:nth-child(1) {text-align: center;}
     tr:nth-child(8) td:nth-child(1) {text-align: center;}
@@ -70,7 +70,7 @@
   <div class="l" id="dollar">🟢</div>
   <div class="l h"><h2>Silver Barter</h2></div></td></tr>
 <tr><td colspan="8">
-  <div class="l">Gold:&nbsp;<input id="gold" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"  disabled></div>
+  <div class="l">Gold:&nbsp;<input id="gold" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
   <a id=fbp href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" target="_blank">FindBullionPrices</a></td>
 <tr><td colspan="8">
   <div class="l">Spot:&nbsp;<input id="spot" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
@@ -112,7 +112,7 @@ let db = {
     "nick": {"fract": .05, "count": 0, "price": 0, "total": 0}  // no 90% nickels; a nickel is the LCD
   },
   // coinflation.com 90% @ .7234 (or .715 troy oz / $1 face for wear)
-  spot = 24.444, amt, troy = .715, 
+  spot, amt, troy = .715, status, default_silver = '21.00', default_gold = '1850.00',
   pAmt = document.getElementById("amt"),
   face = document.getElementById("face_total"),
   ozt  = document.getElementById("troy_ounce"),
@@ -133,7 +133,7 @@ let db = {
 function offsetCenter(){
   let gap = ozt.parentElement.parentElement.offsetWidth - (face.parentElement.offsetWidth + ozt.parentElement.offsetWidth + grand.parentElement.offsetWidth);
   ozt.parentElement.style.marginLeft = `${Math.floor(gap/2)}px`;
-  console.log(gap);
+  // console.log(gap);
 }
 
 function render(){
@@ -216,7 +216,7 @@ pAmt.onchange = function(event){
 document.getElementById("spot").onchange = function(event){
   if(event.target.value.substr(0, 7) == "goldapi"){
     localStorage.setItem("token", event.target.value);
-    event.target.value = spot;
+    event.target.value = default_silver;
     event.target.classList.remove("warn");
   }
   spot = parseFloat(event.target.value);
@@ -264,7 +264,7 @@ function fn(e){
   }
 
   let key = td[1].id;
-  console.log(`key= ${key}`)
+  // console.log(`key= ${key}`)
   db[key]["count"] = Math.max(0, parseFloat(db[key]["count"] + inc));
   db[key]["price"] =(db[key]["fract"] * spot * troy);
   db[key]["total"] =(db[key]["count"] * db[key]["price"]);
@@ -280,39 +280,59 @@ function fn(e){
 }
 
 if(localStorage.getItem("token") === null ){ console.log("NULL token");
-  e = document.getElementById("spot");
-  e.value = spot;
+  let e = document.getElementById("spot");
+  e.value = default_silver;
   e.classList.add("warn");
+  gold.value = default_gold;
   render();
 }else{
   myHeaders.append("x-access-token", localStorage.getItem("token"));
   myHeaders.append("Content-Type", "application/json");
 
   fetch("https://www.goldapi.io/api/XAU/USD", requestOptions)
-    .then(response => response.text())
+    .then(response => {
+      status = response.status;
+      // if(response.status = '403'){
+      //   reject(response.text()); // reject not defined
+      // }else{
+        response.text();
+      // }
+    })
     .then(result => { 
       console.log(result);
-      let price = parseFloat((JSON.parse(result))["price"]); 
-      gold.value = price;
-      // render();
+      if(status==403){
+        gold.value = default_gold;
+      }else{
+        gold.value = parseFloat((JSON.parse(result))["price"]);
+      }
     })
     .catch(error => {
       console.log('error', error);
       // document.getElementById("spot").classList.add("warn");
-      // render();
+      document.getElementById("gold").value = default_gold;
+      render();
     });
 
   fetch("https://www.goldapi.io/api/XAG/USD", requestOptions)
-    .then(response => response.text())
+    .then(response => {
+      status = response.status;
+      response.text()
+    })
     .then(result => { 
       console.log(result);
-      spot = parseFloat((JSON.parse(result))["price"]); 
+      if(status==403){
+        document.getElementById("spot").classList.add("warn");
+        spot = default_silver;
+      }else{
+        spot = parseFloat((JSON.parse(result))["price"]); 
+      }
       document.getElementById("spot").value = spot;
       render();
     })
     .catch(error => {
       console.log('error', error);
       document.getElementById("spot").classList.add("warn");
+      document.getElementById("spot").value = default_silver;
       render();
     });
 }
