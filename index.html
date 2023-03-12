@@ -56,7 +56,8 @@
     #rnd,         #ken         {background-color: #F0F0F0;}
     #rnd.toggled, #ken.toggled {background-color: #F8C8DC;}
     #qua,         #dim         {color: black;}
-    #fbp {font-size: 12px; vertical-align: top;}
+    #fbp  {font-size: 12px; vertical-align: top;}
+    #date {font-size: 12px; vertical-align: bottom; cursor: default;}
     @media only screen and (max-width: 500px) {
       h2 {margin: 10px;}
       #dollar  {margin-top:20px;}
@@ -66,9 +67,11 @@
 </head>
 <body><div id="container">
 <table>
-<tr><td colspan="7">
+<tr><td colspan="8">
   <div class="l" id="dollar">🟢</div>
-  <div class="l h"><h2>Silver Barter</h2></div></td></tr>
+  <div class="l h"><h2>Silver Barter</h2></div><br>
+  <a id="date" href="javascript:clrDate();">03-12-2023</a>
+</td></tr>
 <tr><td colspan="8">
   <div class="l">Gold:&nbsp;<input id="gold" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
   <a id=fbp href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" target="_blank">FindBullionPrices</a></td>
@@ -102,7 +105,6 @@
 </table></div>
   <!-- https://codepen.io/alexandredees/pen/DbXggK -->
 <script>
-
 // https://www.goldapi.io/dashboard - barter/misc/_token.txt
 let db = {
     "dolr": {"fract": 1.3986, "count": 0, "price": 0, "total": 0},
@@ -170,6 +172,7 @@ if(api.token && api.date != today()){
       }
       api.date = today();
       localStorage.setItem("goldapi", JSON.stringify(api));
+      document.getElementById('date').innerHTML = api.date;
     })
     .catch(error => {
       console.log('error', error);
@@ -180,13 +183,6 @@ function offsetCenter(){
   let gap = ozt.parentElement.parentElement.offsetWidth - (face.parentElement.offsetWidth + ozt.parentElement.offsetWidth + grand.parentElement.offsetWidth);
   ozt.parentElement.style.marginLeft = `${Math.floor(gap/2)}px`;
   // console.log(gap);
-}
-
-function render(){
-  let evt = document.createEvent("HTMLEvents");
-  evt.initEvent("change", false, true);
-  console.log("event", evt);
-  silver.dispatchEvent(evt);
 }
 
 //<input type="text" onfocus="this.select();" onmouseup="return false;" value="test" />
@@ -249,17 +245,30 @@ gold.onchange = function(event){
   localStorage.setItem("goldapi", JSON.stringify(api));
   event.target.blur();
 }
+
+// function render(){
+//   let evt = document.createEvent("HTMLEvents");
+//   evt.initEvent("change", false, true);
+//   console.log("event", evt);
+//   silver.dispatchEvent(evt);
+// }
+
 silver.onchange = function(event){
   if(event.target.value.substr(0, 7) == "goldapi"){
     api.token = event.target.value;
     api.date = '';
-    localStorage.setItem("goldapi", JSON.stringify(api));
     event.target.value = api.silver;
     event.target.classList.remove("warn");
+  }else{
+    spot = parseFloat(event.target.value);
+    event.target.value = api.silver = spot.toFixed(3);
+    localStorage.setItem("goldapi", JSON.stringify(api));
+    event.target.blur();
+    render();
   }
-  spot = parseFloat(event.target.value);
-  event.target.value = spot.toFixed(3);
-  event.target.blur();
+}
+
+function render(){
   amt  = parseFloat(pAmt.value);
   // https://youtu.be/xniXT04Q8RE?t=55
   db["nick"]["count"]  = Math.floor(amt / (spot * troy * .05));
@@ -365,6 +374,11 @@ ken.addEventListener('click', function (event) {
   event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
   render();
 });
+function clrDate(){
+  document.getElementById('date').innerHTML = '';
+  api.date = '';
+  localStorage.setItem("goldapi", JSON.stringify(api));
+}
 render();
 /*
   https://www.ngccoin.com/price-guide/coin-melt-values.aspx
