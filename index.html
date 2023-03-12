@@ -286,24 +286,17 @@ if(localStorage.getItem("token") === null ){ console.log("NULL token");
   gold.value = default_gold;
   render();
 }else{
-  myHeaders.append("x-access-token", localStorage.getItem("token"));
+  // myHeaders.get("x-access-token")
+  myHeaders.append("x-access-token", 'goldapi-kqul518l03if1e4-io'); //localStorage.getItem("token"));
   myHeaders.append("Content-Type", "application/json");
 
   fetch("https://www.goldapi.io/api/XAU/USD", requestOptions)
-    .then(response => {
-      status = response.status;
-      // if(response.status = '403'){
-      //   reject(response.text()); // reject not defined
-      // }else{
-        response.text();
-      // }
-    })
+    .then(response => response.text())
     .then(result => { 
       console.log(result);
-      if(status==403){
-        gold.value = default_gold;
-      }else{
-        gold.value = parseFloat((JSON.parse(result))["price"]);
+      data = JSON.parse(result);
+      if('price' in data){
+        gold.value = parseFloat(data["price"]);
       }
     })
     .catch(error => {
@@ -314,10 +307,7 @@ if(localStorage.getItem("token") === null ){ console.log("NULL token");
     });
 
   fetch("https://www.goldapi.io/api/XAG/USD", requestOptions)
-    .then(response => {
-      status = response.status;
-      response.text()
-    })
+    .then(response => response.text())
     .then(result => { 
       console.log(result);
       if(status==403){
