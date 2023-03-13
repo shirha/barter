@@ -104,7 +104,6 @@
 </td></tr>
 </table></div>
 <script>
-console.log('start');
 let db = {
     "dolr": {"fract": 1.3986, "count": 0, "price": 0, "total": 0},
     "half": {"fract": .50, "count": 0, "price": 0, "total": 0},
@@ -112,8 +111,7 @@ let db = {
     "dime": {"fract": .10, "count": 0, "price": 0, "total": 0}, 
     "nick": {"fract": .05, "count": 0, "price": 0, "total": 0}  // no 90% nickels; a nickel is the LCD
   },
-  // coinflation.com 90% @ .7234 (or .715 troy oz / $1 face for wear)
-  spot, amt, troy = .715, status, 
+  troy = .715, spot, amt,
   silver = document.getElementById("spot"),
   gold = document.getElementById('gold'),
   pAmt = document.getElementById("amt"),
@@ -125,58 +123,53 @@ let db = {
   premium = document.getElementById('premium'),
   prem = document.getElementById("prem"),
   pric = document.getElementById("price"),
-  myHeaders = new Headers(),
-  requestOptions = {
-  method: 'GET',
-  headers: myHeaders,
-  redirect: 'follow'},
   today = () => new Date().toISOString().split('T')[0];
 
 if(localStorage.getItem("goldapi") === null){ 
   localStorage.setItem("goldapi", JSON.stringify(
-    {"token":"", "silver":"21.00", "gold":"1850.00", "date":""}
+    {"token":"", "date":"", "silver":"21.00", "gold":"1850.00"}
   ));
 }
 const api = JSON.parse(localStorage.getItem("goldapi"));
-gold.value = api.gold;
-silver.value = api.silver;
-document.getElementById('date').innerHTML = api.date;
 // silver.classList.add("warn");
 // silver.classList.remove("warn");
+gold.value = parseFloat(api.gold).toFixed(2);
+silver.value = parseFloat(api.silver).toFixed(3);
+document.getElementById('date').innerHTML = api.date;
+render();
 
-if(api.token && api.date != today()){
-  myHeaders.append("x-access-token", api.token);
-  myHeaders.append("Content-Type", "application/json");
+if(api.token && api.date != today())
+  getSpotPrice();
 
-  fetch("https://www.goldapi.io/api/XAU/USD", requestOptions)
-    .then(response => response.text())
-    .then(result => { 
-      console.log(result);
-      let data = JSON.parse(result);
-      if('price' in data){
-        api.gold = gold.value = data["price"];
-      }
-    })
-    .catch(error => {
-      console.log('error', error);
-    });
+function getSpotPrice(){
+  getResponse("https://www.goldapi.io/api/XAU/USD",'gold')
+  .catch(error => console.log('error', error))
+  getResponse("https://www.goldapi.io/api/XAG/USD",'silver')
+  .catch(error => console.log('error', error))
+}
 
-  fetch("https://www.goldapi.io/api/XAG/USD", requestOptions)
-    .then(response => response.text())
-    .then(result => { 
-      console.log(result);
-      let data = JSON.parse(result);
-      if('price' in data){
-        api.silver = silver.value = data["price"]; 
-        // render();
-      }
+async function getResponse(url, metal) {
+  const response = await fetch(
+    url, { 
+      method: 'GET',
+      headers: {"x-access-token": api.token,
+                "Content-Type": "application/json"},
+      redirect: 'follow'
+  });
+  const data = await response.json();
+  if('price' in data){
+    api[metal] = data["price"]; 
+    if(metal == 'silver') {
+      gold.value = parseFloat(api.gold).toFixed(2);
+      silver.value = parseFloat(api.silver).toFixed(3);
       api.date = today();
       localStorage.setItem("goldapi", JSON.stringify(api));
       document.getElementById('date').innerHTML = api.date;
-    })
-    .catch(error => {
-      console.log('error', error);
-    });
+      render();
+    }
+  }else{
+    console.log(data);
+  }
 }
 
 let e = document.querySelectorAll("button");
@@ -209,7 +202,7 @@ pric.onchange = function(event){
     prem.value = pct.toFixed(1) +"%";
     pric.value = parseFloat(pric.value).toFixed(2);
   }else{
-    pct = parseFloat(pric.value/(factor*spot)-1)*100;
+    pct = parseFloat(pric.value/(factor*silver.value)-1)*100;
     if(pct < 0 || pct > 200){
       pric.className = 'warning';
     }
@@ -219,7 +212,6 @@ pric.onchange = function(event){
   pric.blur(); // event.target
   prem.blur(); 
   // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
-  // render();
 };
 
 prem.onchange = function(event){
@@ -234,7 +226,7 @@ prem.onchange = function(event){
   if(premium.className == "toggled"){
     pric.value = parseFloat(gold.value*(1+pct/100)).toFixed(2);
   }else{
-    pric.value = parseFloat(factor*spot*(1+pct/100)).toFixed(2);
+    pric.value = parseFloat(factor*silver.value*(1+pct/100)).toFixed(2);
   }
   prem.value = parseFloat(pct).toFixed(1) +"%";
   prem.blur(); // event.target
@@ -248,7 +240,7 @@ pAmt.onchange = function(event){
 };
 
 gold.onchange = function(event){
-  gold.value = api.gold = parseFloat(event.target.value).toFixed(1);
+  gold.value = api.gold = parseFloat(event.target.value).toFixed(2);
   localStorage.setItem("goldapi", JSON.stringify(api));
   event.target.blur();
 };
@@ -258,8 +250,7 @@ silver.onchange = function(event){
     api.token = event.target.value;
     api.date = '';
     localStorage.setItem("goldapi", JSON.stringify(api));
-    // console.log('reload');
-    // location.reload();
+    getSpotPrice();
     event.target.value = api.silver;
   }else{
     event.target.value = api.silver = parseFloat(event.target.value).toFixed(3);
@@ -270,10 +261,9 @@ silver.onchange = function(event){
 };
 
 function render(){
-  console.trace();
-  spot = parseFloat(api.silver);
+  spot = parseFloat(silver.value);
   amt  = parseFloat(pAmt.value);
-  // https://youtu.be/xniXT04Q8RE?t=55
+
   db["nick"]["count"]  = Math.floor(amt / (spot * troy * .05));
 
   if(rnd.className != 'toggled'){
@@ -327,7 +317,7 @@ function fn(e){
 
   grand.innerHTML  = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
   let n = amt / (spot * troy);
-  face.innerHTML = (n - db["dolr"]["count"] * (db["dolr"]["fract"] - 1)).toFixed(2);
+  face.innerHTML = (n - db["dolr"]["count"] * (db["dolr"]["fract"] - 1)).toFixed(2); // adjust for rounds
   ozt.innerHTML = (n * troy).toFixed(2);
   offsetCenter();
 }
@@ -374,16 +364,78 @@ function clrDate(){
   document.getElementById('date').innerHTML = api.date = '';
   localStorage.setItem("goldapi", JSON.stringify(api));
 }
-render();
-
-// function render(){
-//   let evt = document.createEvent("HTMLEvents");
-//   evt.initEvent("change", false, true);
-//   console.log("event", evt);
-//   silver.dispatchEvent(evt);
-// }
 
 /*
+function render(){
+  let evt = document.createEvent("HTMLEvents");
+  evt.initEvent("change", false, true);
+  console.log("event", evt);
+  silver.dispatchEvent(evt);
+}
+
+  myHeaders = new Headers(),
+  requestOptions = {
+  method: 'GET',
+  headers: myHeaders,
+  redirect: 'follow'},
+
+  myHeaders.append("x-access-token", api.token);
+  myHeaders.append("Content-Type", "application/json");
+
+  fetch("https://www.goldapi.io/api/XAU/USD", requestOptions)
+    .then(response => response.text())
+    .then(result => { 
+      console.log(result);
+      let data = JSON.parse(result);
+      if('price' in data){
+        api.gold = gold.value = data["price"];
+      }
+    })
+    .catch(error => {
+      console.log('error', error);
+    });
+
+  fetch("https://www.goldapi.io/api/XAG/USD", requestOptions)
+    .then(response => response.text())
+    .then(result => { 
+      console.log(result);
+      let data = JSON.parse(result);
+      if('price' in data){
+        api.silver = silver.value = data["price"]; 
+        // render();
+      }
+      api.date = today();
+      localStorage.setItem("goldapi", JSON.stringify(api));
+      document.getElementById('date').innerHTML = api.date;
+    })
+    .catch(error => {
+      console.log('error', error);
+    });
+  getResponse("https://www.goldapi.io/api/XAU/USD")
+  .then(data => {
+    if('price' in data){
+      api.gold = data["price"];
+      api.date = today();
+      localStorage.setItem("goldapi", JSON.stringify(api));
+      document.getElementById('date').innerHTML = api.date;
+    }})
+  .catch(error => console.log('error', error))
+  getResponse("https://www.goldapi.io/api/XAG/USD")
+  .then(data => {
+    if('price' in data){
+      api.silver = data["price"]; 
+      api.date = today();
+      localStorage.setItem("goldapi", JSON.stringify(api));
+      document.getElementById('date').innerHTML = api.date;
+    }})
+  .catch(error => console.log('error', error))
+  console.log('fetch',api);
+}
+
+  coinflation.com 90% @ .7234 (or .715 troy oz / $1 face for wear)
+  https://youtu.be/xniXT04Q8RE?t=55
+
+  https://stackoverflow.com/questions/114543/how-can-i-horizontally-center-an-element
   https://codepen.io/alexandredees/pen/DbXggK
   https://www.goldapi.io/dashboard - barter/misc/_token.txt
   https://www.ngccoin.com/price-guide/coin-melt-values.aspx
