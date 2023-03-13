@@ -56,8 +56,8 @@
     #rnd,         #ken         {background-color: #F0F0F0;}
     #rnd.toggled, #ken.toggled {background-color: #F8C8DC;}
     #qua,         #dim         {color: black;}
-    #fbp  {font-size: 12px; vertical-align: top;}
-    #date {font-size: 12px; vertical-align: bottom; cursor: default;}
+    #fbp  {font-size: 12px; vertical-align: top;text-decoration: none;}
+    #date {font-size: 12px; vertical-align: middle; cursor: default; color: #511a88;text-decoration: none;}
     @media only screen and (max-width: 500px) {
       h2 {margin: 10px;}
       #dollar  {margin-top:20px;}
@@ -70,7 +70,7 @@
 <tr><td colspan="8">
   <div class="l" id="dollar">🟢</div>
   <div class="l h"><h2>Silver Barter</h2></div><br>
-  <a id="date" href="javascript:clrDate();">03-12-2023</a>
+  <a id="date" href="javascript:clrDate();"></a>
 </td></tr>
 <tr><td colspan="8">
   <div class="l">Gold:&nbsp;<input id="gold" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
@@ -135,12 +135,13 @@ let db = {
 
 if(localStorage.getItem("goldapi") === null){ 
   localStorage.setItem("goldapi", JSON.stringify(
-    {"token":"", "silver":"21.00", "gold":"1850.00", "date":today()}
+    {"token":"", "silver":"21.00", "gold":"1850.00", "date":""}
   ));
 }
 const api = JSON.parse(localStorage.getItem("goldapi"));
 gold.value = api.gold;
-silver.value = spot = api.silver;
+silver.value = api.silver;
+document.getElementById('date').innerHTML = api.date;
 // silver.classList.add("warn");
 // silver.classList.remove("warn");
 
@@ -167,7 +168,7 @@ if(api.token && api.date != today()){
       console.log(result);
       let data = JSON.parse(result);
       if('price' in data){
-        spot = api.silver = silver.value = data["price"]; 
+        api.silver = silver.value = data["price"]; 
         // render();
       }
       api.date = today();
@@ -179,13 +180,19 @@ if(api.token && api.date != today()){
     });
 }
 
-function offsetCenter(){
-  let gap = ozt.parentElement.parentElement.offsetWidth - (face.parentElement.offsetWidth + ozt.parentElement.offsetWidth + grand.parentElement.offsetWidth);
-  ozt.parentElement.style.marginLeft = `${Math.floor(gap/2)}px`;
-  // console.log(gap);
-}
-
-//<input type="text" onfocus="this.select();" onmouseup="return false;" value="test" />
+let e = document.querySelectorAll("button");
+for(let i = 0; i < e.length; i++){
+  e[i].addEventListener("click", function(event){ 
+    fn(event.target);
+    let e = document.getElementsByClassName("face"), n = 0;
+    for(let i = 0; i < e.length; i++){
+      n += parseFloat(e[i].textContent * db[e[i].id]["fract"]);
+    } 
+    face.innerHTML = (n - db["dolr"]["count"] * (db["dolr"]["fract"] -1)).toFixed(2);     
+    ozt.innerHTML = (n * troy).toFixed(2);  
+    pAmt.value = Math.floor(parseFloat(grand_total.innerHTML)+1).toFixed(2);   
+  });
+};
 
 pric.onchange = function(event){
   let pct, factor = document.querySelector('input[name="type"]:checked').value;
@@ -257,18 +264,22 @@ silver.onchange = function(event){
   if(event.target.value.substr(0, 7) == "goldapi"){
     api.token = event.target.value;
     api.date = '';
-    event.target.value = api.silver;
-    event.target.classList.remove("warn");
-  }else{
-    spot = parseFloat(event.target.value);
-    event.target.value = api.silver = spot.toFixed(3);
     localStorage.setItem("goldapi", JSON.stringify(api));
-    event.target.blur();
-    render();
+    // location.reload();
+  }else{
+    // event.target.value = api.silver;
+    // event.target.classList.remove("warn");
+  // }else{
+    event.target.value = api.silver = parseFloat(event.target.value).toFixed(3);
+    localStorage.setItem("goldapi", JSON.stringify(api));
   }
+  event.target.blur();
+  render();
 }
 
 function render(){
+  console.trace();
+  spot = parseFloat(api.silver);
   amt  = parseFloat(pAmt.value);
   // https://youtu.be/xniXT04Q8RE?t=55
   db["nick"]["count"]  = Math.floor(amt / (spot * troy * .05));
@@ -297,24 +308,11 @@ function render(){
   }
 
   let e = document.querySelectorAll('tr');
-  [e[4],e[6], e[8], e[10]].forEach(e => fn(e));
-};
-
-let e = document.querySelectorAll("button");
-for(let i = 0; i < e.length; i++){
-  e[i].addEventListener("click", function(event){ 
-    fn(event.target);
-    let e = document.getElementsByClassName("face"), n = 0;
-    for(let i = 0; i < e.length; i++){
-      n += parseFloat(e[i].textContent * db[e[i].id]["fract"]);
-    } 
-    face.innerHTML = (n - db["dolr"]["count"] * (db["dolr"]["fract"] -1)).toFixed(2);     
-    ozt.innerHTML = (n * troy).toFixed(2);  
-    pAmt.value = Math.floor(parseFloat(grand_total.innerHTML)+1).toFixed(2);   
-  });
+  [e[4], e[6], e[8], e[10]].forEach(e => fn(e));
 };
 
 function fn(e){
+  console.log(e);
   let td, inc;
   if(e.tagName == "BUTTON"){
     td  = e.parentNode.parentNode.querySelectorAll('td'),
@@ -327,19 +325,25 @@ function fn(e){
   }
 
   let key = td[1].id;
-  console.log(`key= ${key}`)
   db[key]["count"] = Math.max(0, parseFloat(db[key]["count"] + inc));
   db[key]["price"] =(db[key]["fract"] * spot * troy);
   db[key]["total"] =(db[key]["count"] * db[key]["price"]);
   td[1].innerHTML  = db[key]["count"];
   td[4].innerHTML  = db[key]["price"].toFixed(3);
   td[6].innerHTML  = db[key]["total"].toFixed(2);
+  console.log(`key= ${key}`,db[key]);
 
   grand.innerHTML  = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
   let n = amt / (spot * troy);
   face.innerHTML = (n - db["dolr"]["count"] * (db["dolr"]["fract"] - 1)).toFixed(2);
   ozt.innerHTML = (n * troy).toFixed(2);
   offsetCenter();
+}
+
+function offsetCenter(){
+  let gap = ozt.parentElement.parentElement.offsetWidth - (face.parentElement.offsetWidth + ozt.parentElement.offsetWidth + grand.parentElement.offsetWidth);
+  ozt.parentElement.style.marginLeft = `${Math.floor(gap/2)}px`;
+  // console.log(gap);
 }
 
 function clrPrem(){
@@ -353,12 +357,12 @@ for(let i = 0; i < e.length; i++){
   e[i].addEventListener("click", function(event){ 
     clrPrem();
     premium.className = '';
-    gold.className = '';
+    gold.className    = '';
   });
 };
 premium.addEventListener('click', function (event) {
   event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
-  gold.className = 'toggled' == gold.className ? '' : 'toggled';
+  gold.className         = 'toggled' == gold.className         ? '' : 'toggled';
   clrPrem();
 });
 document.getElementById('dollar')
@@ -375,8 +379,7 @@ ken.addEventListener('click', function (event) {
   render();
 });
 function clrDate(){
-  document.getElementById('date').innerHTML = '';
-  api.date = '';
+  document.getElementById('date').innerHTML = api.date = '';
   localStorage.setItem("goldapi", JSON.stringify(api));
 }
 render();
