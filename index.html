@@ -103,9 +103,8 @@
     <br>&nbsp;
 </td></tr>
 </table></div>
-  <!-- https://codepen.io/alexandredees/pen/DbXggK -->
 <script>
-// https://www.goldapi.io/dashboard - barter/misc/_token.txt
+console.log('start');
 let db = {
     "dolr": {"fract": 1.3986, "count": 0, "price": 0, "total": 0},
     "half": {"fract": .50, "count": 0, "price": 0, "total": 0},
@@ -247,35 +246,28 @@ pAmt.onchange = function(event){
   event.target.blur();
   render();
 };
+
 gold.onchange = function(event){
   gold.value = api.gold = parseFloat(event.target.value).toFixed(1);
   localStorage.setItem("goldapi", JSON.stringify(api));
   event.target.blur();
-}
-
-// function render(){
-//   let evt = document.createEvent("HTMLEvents");
-//   evt.initEvent("change", false, true);
-//   console.log("event", evt);
-//   silver.dispatchEvent(evt);
-// }
+};
 
 silver.onchange = function(event){
   if(event.target.value.substr(0, 7) == "goldapi"){
     api.token = event.target.value;
     api.date = '';
     localStorage.setItem("goldapi", JSON.stringify(api));
+    // console.log('reload');
     // location.reload();
+    event.target.value = api.silver;
   }else{
-    // event.target.value = api.silver;
-    // event.target.classList.remove("warn");
-  // }else{
     event.target.value = api.silver = parseFloat(event.target.value).toFixed(3);
     localStorage.setItem("goldapi", JSON.stringify(api));
+    event.target.blur();
+    render();
   }
-  event.target.blur();
-  render();
-}
+};
 
 function render(){
   console.trace();
@@ -383,7 +375,17 @@ function clrDate(){
   localStorage.setItem("goldapi", JSON.stringify(api));
 }
 render();
+
+// function render(){
+//   let evt = document.createEvent("HTMLEvents");
+//   evt.initEvent("change", false, true);
+//   console.log("event", evt);
+//   silver.dispatchEvent(evt);
+// }
+
 /*
+  https://codepen.io/alexandredees/pen/DbXggK
+  https://www.goldapi.io/dashboard - barter/misc/_token.txt
   https://www.ngccoin.com/price-guide/coin-melt-values.aspx
   https://www.cointalk.com/threads/715-or-7234-to-calculate-90.290085/
   https://www.coinflation.com/coins/1932-1964-Silver-Washington-Quarter-Value.html
