@@ -10,9 +10,12 @@
   <style>
     #container {display: block; max-width: 480px;}
     body {font-size: 24px; font-family: Helvetica;}
-    input[type="text"] {font-size:24px; width: 90px; text-align: right; padding-right: 8px; border-radius: 6px; border-width: 1px;}
+    #gold,
+    input[type="text"] {font-size: 24px; text-align: right;  border-radius: 6px; width: 90px; border-width: thin; padding-right: 8px;}
+    input[type=button] {font-size: 24px; text-align: center; border-radius: 6px; margin: 3px; border-width: thin;}
     .warn {background-color: #E6E6FA;}
     button {background-color: #E6E6FA; font-size:24px; border-radius: 6px; border-width: 1px;}
+    button {min-width: 32px;}
     td {text-align: right;}
     td:nth-child(2) {min-width: 60px; padding: 0 10px; text-align: center;}
     td:nth-child(5) {min-width: 74px; padding: 0 10px;}
@@ -23,14 +26,6 @@
     tr:nth-child(6) td:nth-child(1) {text-align: center;}
     tr:nth-child(8) td:nth-child(1) {text-align: center;}
     tr:nth-child(10) td:nth-child(1) {text-align: center;}
-    button {min-width: 32px;}
-    button {min-width: 32px;}
-    #half_img {display: block; margin:5px auto; height: 186px;}
-    #quar_img {display: block; margin:5px auto; height: 147px;}
-    #dime_img {display: block; margin:5px auto; height: 109px;}
-    #face_total, #troy_ounce, #grand_total {padding: 0 10px;}
-    #price, #prem {margin-top: 5px;}
-    #price.warning, #prem.warning {color:red;}
     table {
       background-image: url("cover.jpg");
       background-size: 100% 100%;
@@ -43,11 +38,13 @@
     hr {margin:5px 0;}
     div, h2 {display: inline-block;}
     .l {float: left;}
-    .m {width:33%}
     .r {float: right;}
+    .a {padding:0 0 0 25px !important;}
     .h {align:right;}
-    .a {padding:0 0 0 40px !important;}
-    #gold, input[type=button] {text-align: center; border-radius: 6px; font-size: 24px; margin: 3px; border-width: thin;}
+    #qua, #dim {color: black;}
+    #face_total, #troy_ounce, #grand_total {padding: 0 10px;}
+    #price, #prem {margin-top: 5px;}
+    #price.warning, #prem.warning {color:red;}
     #prem-hd {float:left; margin-left:150px; font-size:24px; font-weight:bold;}
     #premium                   {background-color: white; border-radius:50%;font-size: 12px; margin:15px 0 0 40px; width:12px; height:12px; float: left; border:1px solid black;}
     #premium.toggled           {background-color: #FFD700;}
@@ -55,8 +52,7 @@
     #rnd.toggled, #ken.toggled {background-color: #F8C8DC;}
     #rnd,         #ken         {background-color: #F0F0F0;}
     #rnd.toggled, #ken.toggled {background-color: #F8C8DC;}
-    #qua,         #dim         {color: black;}
-    #fbp, #date,  #dollar  {font-size: 12px; text-decoration: none; color:#551A8B;}
+    #fbp, #date,  #dollar      {font-size: 12px; text-decoration: none; color:#551A8B;}
     @media only screen and (max-width: 500px) {
       #premium {width:16px; height:16px;}
     }
@@ -64,8 +60,8 @@
 </head>
 <body><div id="container">
 <table>
-<tr><td colspan="5"><h2 class=h>Silver Barter</h2></div></td>
-    <td colspan="2" class=a>
+<tr><td colspan="6"><h2 class=h>Silver Barter</h2></div></td>
+    <td class=a>
   <a id="dollar" href="javascript:setSpot();">$28 Spot Price</a><br>
   <a id="date" href="javascript:getSpot();">Get Spot Price</a><br>
   <a id=fbp href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" target="_blank">Find Bullion Prices</a></td>
