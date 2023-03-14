@@ -10,10 +10,10 @@
   <style>
     #container {display: block; max-width: 480px;}
     body {font-size: 24px; font-family: Helvetica;}
+    .warn  {background-color: #e9dbf5;} /* #efe4f7; #E6E6FA;}*/
     #gold,
     input[type="text"] {font-size: 24px; text-align: right;  border-radius: 6px; width: 90px; border-width: thin; padding-right: 8px;}
     input[type=button] {font-size: 24px; text-align: center; border-radius: 6px; margin: 3px; border-width: thin;}
-    .warn {background-color: #E6E6FA;}
     button {background-color: #E6E6FA; font-size:24px; border-radius: 6px; border-width: 1px;}
     button {min-width: 32px;}
     td {text-align: right;}
@@ -31,8 +31,11 @@
       background-size: 100% 100%;
       background-color: rgba(255,255,255,0.6);
       background-blend-mode: lighten;
-/*      background-size: contain;
-        background-repeat: no-repeat;  */
+/*      
+      background-size: contain;
+      background-repeat: no-repeat;  
+    #gold                      {background-color: #fbf6c7;}
+*/
       margin: auto;
     }
     hr {margin:5px 0;}
@@ -129,38 +132,40 @@ if(localStorage.getItem("goldapi") === null){
   ));
 }
 const api = JSON.parse(localStorage.getItem("goldapi"));
-// silver.classList.add("warn");
-// silver.classList.remove("warn");
 gold.value = parseFloat(api.gold).toFixed(2);
 silver.value = parseFloat(api.silver).toFixed(3);
-// document.getElementById('date').innerHTML = api.date;
+if(!api.token.match(/goldapi/)){
+  silver.classList.add("warn");
+  let e = document.getElementById("date");
+  e.href = "https://www.goldapi.io/";
+  e.target = "_blank";
+}
 render();
 
-// if(api.token && api.date != today())
-//   getSpotPrice()
-//     .catch(error => console.log('error', error));
-
 async function getSpot(){
+  if(!api.token.match(/goldapi/)) return;
   let response, data;
   myHeaders.append("x-access-token", api.token);
   myHeaders.append("Content-Type", "application/json");
   response = await fetch(
     "https://www.goldapi.io/api/XAU/USD", requestOptions);
   data = await response.json();
+  console.log(data);
   if('price' in data) 
     api.gold = data["price"]; 
   response = await fetch(
     "https://www.goldapi.io/api/XAG/USD", requestOptions);
   data = await response.json();
+  console.log(data);
   if('price' in data){
     api.silver = data["price"]; 
     api.date = today();
     localStorage.setItem("goldapi", JSON.stringify(api));
     gold.value = parseFloat(api.gold).toFixed(2);
     silver.value = parseFloat(api.silver).toFixed(3);
-    // document.getElementById('date').innerHTML = api.date;
+    silver.classList.remove("warn");
     render();
-  }else console.log(data);
+  } // else console.log(data);
 }
 
 let e = document.querySelectorAll("button");
@@ -351,6 +356,12 @@ function setSpot(){
   silver.value = 27.972;
   render();
 };
+// document.getElementById('date').innerHTML = api.date;
+
+// if(api.token && api.date != today())
+//   getSpotPrice()
+//     .catch(error => console.log('error', error));
+
 // function clrDate(){
 //   document.getElementById('date').innerHTML = api.date = '';
 //   localStorage.setItem("goldapi", JSON.stringify(api));
