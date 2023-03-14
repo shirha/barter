@@ -123,7 +123,12 @@ let db = {
   premium = document.getElementById('premium'),
   prem = document.getElementById("prem"),
   pric = document.getElementById("price"),
-  today = () => new Date().toISOString().split('T')[0];
+  today = () => new Date().toISOString().split('T')[0],
+  myHeaders = new Headers(),
+  requestOptions = {
+  method: 'GET',
+  headers: myHeaders,
+  redirect: 'follow'};
 
 if(localStorage.getItem("goldapi") === null){ 
   localStorage.setItem("goldapi", JSON.stringify(
@@ -139,37 +144,30 @@ document.getElementById('date').innerHTML = api.date;
 render();
 
 if(api.token && api.date != today())
-  getSpotPrice();
+  getSpotPrice()
+    .catch(error => console.log('error', error));
 
-function getSpotPrice(){
-  getResponse("https://www.goldapi.io/api/XAU/USD",'gold')
-  .catch(error => console.log('error', error))
-  getResponse("https://www.goldapi.io/api/XAG/USD",'silver')
-  .catch(error => console.log('error', error))
-}
-
-async function getResponse(url, metal) {
-  const response = await fetch(
-    url, { 
-      method: 'GET',
-      headers: {"x-access-token": api.token,
-                "Content-Type": "application/json"},
-      redirect: 'follow'
-  });
-  const data = await response.json();
+async function getSpotPrice(){
+  let response, data;
+  myHeaders.append("x-access-token", api.token);
+  myHeaders.append("Content-Type", "application/json");
+  response = await fetch(
+    "https://www.goldapi.io/api/XAU/USD", requestOptions);
+  data = await response.json();
+  if('price' in data) 
+    api.gold = data["price"]; 
+  response = await fetch(
+    "https://www.goldapi.io/api/XAG/USD", requestOptions);
+  data = await response.json();
   if('price' in data){
-    api[metal] = data["price"]; 
-    if(metal == 'silver') {
-      gold.value = parseFloat(api.gold).toFixed(2);
-      silver.value = parseFloat(api.silver).toFixed(3);
-      api.date = today();
-      localStorage.setItem("goldapi", JSON.stringify(api));
-      document.getElementById('date').innerHTML = api.date;
-      render();
-    }
-  }else{
-    console.log(data);
-  }
+    api.silver = data["price"]; 
+    api.date = today();
+    localStorage.setItem("goldapi", JSON.stringify(api));
+    gold.value = parseFloat(api.gold).toFixed(2);
+    silver.value = parseFloat(api.silver).toFixed(3);
+    document.getElementById('date').innerHTML = api.date;
+    render();
+  }else console.log(data);
 }
 
 let e = document.querySelectorAll("button");
@@ -250,17 +248,18 @@ silver.onchange = function(event){
     api.token = event.target.value;
     api.date = '';
     localStorage.setItem("goldapi", JSON.stringify(api));
-    getSpotPrice();
+    getSpotPrice()
+      .catch(error => console.log('error', error));
     event.target.value = api.silver;
   }else{
     event.target.value = api.silver = parseFloat(event.target.value).toFixed(3);
     localStorage.setItem("goldapi", JSON.stringify(api));
-    event.target.blur();
     render();
   }
+  event.target.blur();
 };
 
-function render(){
+function render(){ console.trace();
   spot = parseFloat(silver.value);
   amt  = parseFloat(pAmt.value);
 
@@ -373,14 +372,6 @@ function render(){
   silver.dispatchEvent(evt);
 }
 
-  myHeaders = new Headers(),
-  requestOptions = {
-  method: 'GET',
-  headers: myHeaders,
-  redirect: 'follow'},
-
-  myHeaders.append("x-access-token", api.token);
-  myHeaders.append("Content-Type", "application/json");
 
   fetch("https://www.goldapi.io/api/XAU/USD", requestOptions)
     .then(response => response.text())
