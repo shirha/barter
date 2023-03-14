@@ -40,13 +40,13 @@
         background-repeat: no-repeat;  */
       margin: auto;
     }
+    hr {margin:5px 0;}
     div, h2 {display: inline-block;}
     .l {float: left;}
     .m {width:33%}
     .r {float: right;}
-    .h {padding-left: 60px;}
-    hr {margin:5px 0;}
-    #dollar {font-size: 12px; vertical-align: text-bottom; margin-top: 40px; cursor: default;}
+    .h {align:right;}
+    .a {padding:0 0 0 40px !important;}
     #gold, input[type=button] {text-align: center; border-radius: 6px; font-size: 24px; margin: 3px; border-width: thin;}
     #prem-hd {float:left; margin-left:150px; font-size:24px; font-weight:bold;}
     #premium                   {background-color: white; border-radius:50%;font-size: 12px; margin:15px 0 0 40px; width:12px; height:12px; float: left; border:1px solid black;}
@@ -56,41 +56,38 @@
     #rnd,         #ken         {background-color: #F0F0F0;}
     #rnd.toggled, #ken.toggled {background-color: #F8C8DC;}
     #qua,         #dim         {color: black;}
-    #fbp  {font-size: 12px; vertical-align: top;text-decoration: none;}
-    #date {font-size: 12px; vertical-align: middle; cursor: default; color: #511a88;text-decoration: none;}
+    #fbp, #date,  #dollar  {font-size: 12px; text-decoration: none; color:#551A8B;}
     @media only screen and (max-width: 500px) {
-      h2 {margin: 10px;}
-      #dollar  {margin-top:20px;}
       #premium {width:16px; height:16px;}
     }
   </style>
 </head>
 <body><div id="container">
 <table>
-<tr><td colspan="8">
-  <div class="l" id="dollar">🟢</div>
-  <div class="l h"><h2>Silver Barter</h2></div><br>
-  <a id="date" href="javascript:clrDate();"></a>
+<tr><td colspan="5"><h2 class=h>Silver Barter</h2></div></td>
+    <td colspan="2" class=a>
+  <a id="dollar" href="javascript:setSpot();">$28 Spot Price</a><br>
+  <a id="date" href="javascript:getSpot();">Get Spot Price</a><br>
+  <a id=fbp href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" target="_blank">Find Bullion Prices</a></td>
 </td></tr>
-<tr><td colspan="8">
+<tr><td colspan="7">
   <div class="l">Gold:&nbsp;<input id="gold" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
-  <a id=fbp href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" target="_blank">FindBullionPrices</a></td>
-<tr><td colspan="8">
+<tr><td colspan="7">
   <div class="l">Spot:&nbsp;<input id="spot" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
   <div class="r">Amt:&nbsp;<input id="amt" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value="28.00"></div></td></tr>
-<tr><td colspan="8"><input type=button value="Silver Rounds" id="rnd"></td></tr>
+<tr><td colspan="7"><input type=button value="Silver Rounds" id="rnd"></td></tr>
 <tr><td><button>+</button></td><td id="dolr" class="face">1</td><td><button>-</button></td><td>×</td><td id="dolr_price">10.60</td><td>=</td><td id="dolr_total">10.60</td></tr>  
-<tr><td colspan="8"><input type=button value="Half-Dollars" id="ken"></td></tr>
+<tr><td colspan="7"><input type=button value="Half-Dollars" id="ken"></td></tr>
 <tr><td><button>+</button></td><td id="half" class="face">1</td><td><button>-</button></td><td>×</td><td id="half_price">10.60</td><td>=</td><td id="half_total">10.60</td></tr>  
-<tr><td colspan="8"><input type=button value="Quarters" disabled id="qua"></td></tr>
+<tr><td colspan="7"><input type=button value="Quarters" disabled id="qua"></td></tr>
 <tr><td><button>+</button></td><td id="quar" class="face">1</td><td><button>-</button></td><td>×</td><td id="quar_price">5.30</td><td>=</td><td id="quarter_total">5.30</td></tr>  
-<tr><td colspan="8"><input type=button value="Dimes" disabled id="dim"></td></tr>
+<tr><td colspan="7"><input type=button value="Dimes" disabled id="dim"></td></tr>
 <tr><td><button>+</button></td><td id="dime" class="face">1</td><td><button>-</button></td><td>×</td><td id="dime_price">2.12</td><td>=</td><td id="dime_total">2.12</td></tr>  
-<tr><td colspan="8">
+<tr><td colspan="7">
   <div class="l">Face:<div id="face_total"></div></div>
   <div class="l">ozt:<div id="troy_ounce">2.1</div></div>
   <div class="r">Total:<div id="grand_total"></div></div></td></tr>
-<tr><td colspan="8"><hr><div id="prem-hd">Premiums</div><br><hr>
+<tr><td colspan="7"><hr><div id="prem-hd">Premiums</div><br><hr>
   <div class=l style="margin-left:25px;">$1 face of 
     <input type="radio" id="junk" name="type" value=".7234" checked><label for="html">junk</label>
     <input type="radio" id="doll" name="type" value=".7734"><label for="html">dollar</label>
@@ -140,14 +137,14 @@ const api = JSON.parse(localStorage.getItem("goldapi"));
 // silver.classList.remove("warn");
 gold.value = parseFloat(api.gold).toFixed(2);
 silver.value = parseFloat(api.silver).toFixed(3);
-document.getElementById('date').innerHTML = api.date;
+// document.getElementById('date').innerHTML = api.date;
 render();
 
-if(api.token && api.date != today())
-  getSpotPrice()
-    .catch(error => console.log('error', error));
+// if(api.token && api.date != today())
+//   getSpotPrice()
+//     .catch(error => console.log('error', error));
 
-async function getSpotPrice(){
+async function getSpot(){
   let response, data;
   myHeaders.append("x-access-token", api.token);
   myHeaders.append("Content-Type", "application/json");
@@ -165,7 +162,7 @@ async function getSpotPrice(){
     localStorage.setItem("goldapi", JSON.stringify(api));
     gold.value = parseFloat(api.gold).toFixed(2);
     silver.value = parseFloat(api.silver).toFixed(3);
-    document.getElementById('date').innerHTML = api.date;
+    // document.getElementById('date').innerHTML = api.date;
     render();
   }else console.log(data);
 }
@@ -248,7 +245,7 @@ silver.onchange = function(event){
     api.token = event.target.value;
     api.date = '';
     localStorage.setItem("goldapi", JSON.stringify(api));
-    getSpotPrice()
+    getSpot()
       .catch(error => console.log('error', error));
     event.target.value = api.silver;
   }else{
@@ -346,11 +343,6 @@ premium.addEventListener('click', function (event) {
   gold.className         = 'toggled' == gold.className         ? '' : 'toggled';
   clrPrem();
 });
-document.getElementById('dollar')
-.addEventListener('click', function (event) {
-  silver.value = 27.972;
-  render();
-});
 rnd.addEventListener('click', function (event) {
   event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
   render();
@@ -359,10 +351,14 @@ ken.addEventListener('click', function (event) {
   event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
   render();
 });
-function clrDate(){
-  document.getElementById('date').innerHTML = api.date = '';
-  localStorage.setItem("goldapi", JSON.stringify(api));
-}
+function setSpot(){
+  silver.value = 27.972;
+  render();
+};
+// function clrDate(){
+//   document.getElementById('date').innerHTML = api.date = '';
+//   localStorage.setItem("goldapi", JSON.stringify(api));
+// }
 
 /*
 function render(){
@@ -422,6 +418,8 @@ function render(){
   .catch(error => console.log('error', error))
   console.log('fetch',api);
 }
+      h2 {margin: 10px;}
+      #dollar  {margin-top:20px;}
 
   coinflation.com 90% @ .7234 (or .715 troy oz / $1 face for wear)
   https://youtu.be/xniXT04Q8RE?t=55
