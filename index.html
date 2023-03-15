@@ -74,13 +74,13 @@
   <div class="l">Spot:&nbsp;<input id="spot" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
   <div class="r">Amt:&nbsp;<input id="amt" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value="28.00"></div></td></tr>
 <tr><td colspan="7"><input type=button value="Silver Rounds" id="rnd"></td></tr>
-<tr><td><button>+</button></td><td id="dolr" class="face">1</td><td><button>-</button></td><td>×</td><td id="dolr_price">10.60</td><td>=</td><td id="dolr_total">10.60</td></tr>  
+<tr class=coin><td><button>+</button></td><td id="dolr" class="face">1</td><td><button>-</button></td><td>×</td><td id="dolr_price">10.60</td><td>=</td><td id="dolr_total">10.60</td></tr>  
 <tr><td colspan="7"><input type=button value="Half-Dollars" id="ken"></td></tr>
-<tr><td><button>+</button></td><td id="half" class="face">1</td><td><button>-</button></td><td>×</td><td id="half_price">10.60</td><td>=</td><td id="half_total">10.60</td></tr>  
+<tr class=coin><td><button>+</button></td><td id="half" class="face">1</td><td><button>-</button></td><td>×</td><td id="half_price">10.60</td><td>=</td><td id="half_total">10.60</td></tr>  
 <tr><td colspan="7"><input type=button value="Quarters" disabled id="qua"></td></tr>
-<tr><td><button>+</button></td><td id="quar" class="face">1</td><td><button>-</button></td><td>×</td><td id="quar_price">5.30</td><td>=</td><td id="quarter_total">5.30</td></tr>  
+<tr class=coin><td><button>+</button></td><td id="quar" class="face">1</td><td><button>-</button></td><td>×</td><td id="quar_price">5.30</td><td>=</td><td id="quarter_total">5.30</td></tr>  
 <tr><td colspan="7"><input type=button value="Dimes" disabled id="dim"></td></tr>
-<tr><td><button>+</button></td><td id="dime" class="face">1</td><td><button>-</button></td><td>×</td><td id="dime_price">2.12</td><td>=</td><td id="dime_total">2.12</td></tr>  
+<tr class=coin><td><button>+</button></td><td id="dime" class="face">1</td><td><button>-</button></td><td>×</td><td id="dime_price">2.12</td><td>=</td><td id="dime_total">2.12</td></tr>  
 <tr><td colspan="7">
   <div class="l">Face:<div id="face_total"></div></div>
   <div class="l">ozt:<div id="troy_ounce">2.1</div></div>
@@ -108,7 +108,7 @@ let spot, amt, troy = .715, db = {
   },
   silver = document.getElementById("spot"),
   gold = document.getElementById('gold'),
-  pAmt = document.getElementById("amt"),
+  buy = document.getElementById("amt"),
   face = document.getElementById("face_total"),
   ozt  = document.getElementById("troy_ounce"),
   grand = document.getElementById("grand_total"),
@@ -166,20 +166,6 @@ async function getSpot(){
   } // else console.log(data);
 }
 
-let e = document.querySelectorAll("button");
-for(let i = 0; i < e.length; i++){
-  e[i].addEventListener("click", function(event){ 
-    fn(event.target);
-    let e = document.getElementsByClassName("face"), n = 0;
-    for(let i = 0; i < e.length; i++){
-      n += parseFloat(e[i].textContent * db[e[i].id]["fract"]);
-    } 
-    face.innerHTML = (n - db["dolr"]["count"] * (db["dolr"]["fract"] -1)).toFixed(2);     
-    ozt.innerHTML = (n * troy).toFixed(2);  
-    pAmt.value = Math.floor(parseFloat(grand_total.innerHTML)+1).toFixed(2);   
-  });
-};
-
 pric.onchange = function(event){
   let factor = document.querySelector('input[name="type"]:checked').value,
     pct, price = pric.value;
@@ -220,7 +206,7 @@ prem.onchange = function(event){
   // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
 };
 
-pAmt.onchange = function(event){
+buy.onchange = function(event){
   event.target.value = parseFloat(event.target.value).toFixed(2);
   event.target.blur();
   render();
@@ -250,7 +236,7 @@ silver.onchange = function(event){
 
 function render(){ console.trace();
   spot = parseFloat(silver.value);
-  amt  = parseFloat(pAmt.value);
+  amt  = parseFloat(buy.value);
 
   db["nick"]["count"]  = Math.floor(amt / (spot * troy * .05));
 
@@ -277,8 +263,21 @@ function render(){ console.trace();
     db["half"]["count"]  = 0;
   }
 
-  let e = document.querySelectorAll('tr');
-  [e[4], e[6], e[8], e[10]].forEach(e => fn(e));
+  document.querySelectorAll('.coin').forEach(e => fn(e));
+};
+
+let e = document.querySelectorAll("button");
+for(let i = 0; i < e.length; i++){
+  e[i].addEventListener("click", function(event){ 
+    fn(event.target);
+    let e = document.getElementsByClassName("face"), n = 0;
+    for(let i = 0; i < e.length; i++){
+      n += parseFloat(e[i].textContent * db[e[i].id]["fract"]);
+    } 
+    face.innerHTML = (n - db["dolr"]["count"] * (db["dolr"]["fract"] -1)).toFixed(2);     
+    ozt.innerHTML = (n * troy).toFixed(2);  
+    buy.value = Math.floor(parseFloat(grand_total.innerHTML)+1).toFixed(2);   
+  });
 };
 
 function fn(e){
@@ -304,7 +303,7 @@ function fn(e){
   console.log(`key= ${key}`,db[key]);
 
   grand.innerHTML  = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
-  let n = amt / (spot * troy);
+  let n = amt / (spot * troy); // face based on buy value
   face.innerHTML = (n - db["dolr"]["count"] * (db["dolr"]["fract"] - 1)).toFixed(2); // adjust for rounds
   ozt.innerHTML = (n * troy).toFixed(2);
   offsetCenter();
