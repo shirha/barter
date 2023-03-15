@@ -10,7 +10,7 @@
   <style>
     #container {display: block; max-width: 480px;}
     body {font-size: 24px; font-family: Helvetica;}
-    .warn  {background-color: #e9dbf5;} /* #efe4f7; #E6E6FA;}*/
+    .warn {background-color: #e9dbf5;} /* #efe4f7; #E6E6FA;}*/
     #gold,
     input[type="text"] {font-size: 24px; text-align: right;  border-radius: 6px; width: 90px; border-width: thin; padding-right: 8px;}
     input[type=button] {font-size: 24px; text-align: center; border-radius: 6px; margin: 3px; border-width: thin;}
@@ -67,8 +67,7 @@
     <td class=a>
   <a id="dollar" href="javascript:setSpot();">$28 Spot Price</a><br>
   <a id="date" href="javascript:getSpot();">Get Spot Price</a><br>
-  <a id=fbp href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" target="_blank">Find Bullion Prices</a></td>
-</td></tr>
+  <a id=fbp href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" target="_blank">Find Bullion Prices</a></td></tr>
 <tr><td colspan="7">
   <div class="l">Gold:&nbsp;<input id="gold" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
 <tr><td colspan="7">
@@ -100,14 +99,13 @@
 </td></tr>
 </table></div>
 <script>
-let db = {
-    "dolr": {"fract": 1.3986, "count": 0, "price": 0, "total": 0},
+let spot, amt, troy = .715, db = {
+    "dolr": {"fract": 1/troy, "count": 0, "price": 0, "total": 0},
     "half": {"fract": .50, "count": 0, "price": 0, "total": 0},
     "quar": {"fract": .25, "count": 0, "price": 0, "total": 0}, 
     "dime": {"fract": .10, "count": 0, "price": 0, "total": 0}, 
     "nick": {"fract": .05, "count": 0, "price": 0, "total": 0}  // no 90% nickels; a nickel is the LCD
   },
-  troy = .715, spot, amt,
   silver = document.getElementById("spot"),
   gold = document.getElementById('gold'),
   pAmt = document.getElementById("amt"),
@@ -183,46 +181,39 @@ for(let i = 0; i < e.length; i++){
 };
 
 pric.onchange = function(event){
-  let pct, factor = document.querySelector('input[name="type"]:checked').value;
-  if(pric.value == '' || pric.value == '0'){
-    clrPrem();
+  let factor = document.querySelector('input[name="type"]:checked').value,
+    pct, price = pric.value;
+  clrPrem();
+  if(price.match(/^[0 ]?$/)){
     return false;
   }
-  pric.className = '';
-  prem.className = '';
   if(premium.className == "toggled"){
-    pct = parseFloat((pric.value/gold.value-1)*100);
-    if(pct < 0 || pct > 100){
+    pct = parseFloat((price/gold.value -1)*100);
+    if(pct < 0 || pct > 100)
       pric.className = 'warning';
-    }
-    prem.value = pct.toFixed(1) +"%";
-    pric.value = parseFloat(pric.value).toFixed(2);
   }else{
-    pct = parseFloat(pric.value/(factor*silver.value)-1)*100;
-    if(pct < 0 || pct > 200){
+    pct = parseFloat(price/(factor*silver.value) -1)*100;
+    if(pct < 0 || pct > 200)
       pric.className = 'warning';
-    }
-    prem.value = pct.toFixed(1) +"%";
-    pric.value = parseFloat(pric.value).toFixed(2);
   }
+  prem.value = pct.toFixed(1) +"%";
+  pric.value = parseFloat(price).toFixed(2);
   pric.blur(); // event.target
   prem.blur(); 
   // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
 };
 
 prem.onchange = function(event){
-  let pct  = prem.value.replace(/%/,'');
-  let factor = document.querySelector('input[name="type"]:checked').value;
-  if(pct == '' || pct == '0'){
-    clrPrem();
+  let factor = document.querySelector('input[name="type"]:checked').value,
+    pct = prem.value.replace(/%/,'');
+  clrPrem();
+  if(pct.match(/^[0 ]?$/)){
     return false;
   }
-  pric.className = '';
-  prem.className = '';
   if(premium.className == "toggled"){
-    pric.value = parseFloat(gold.value*(1+pct/100)).toFixed(2);
+    pric.value = parseFloat(gold.value*(1+ pct/100)).toFixed(2);
   }else{
-    pric.value = parseFloat(factor*silver.value*(1+pct/100)).toFixed(2);
+    pric.value = parseFloat(factor*silver.value*(1+ pct/100)).toFixed(2);
   }
   prem.value = parseFloat(pct).toFixed(1) +"%";
   prem.blur(); // event.target
@@ -325,18 +316,20 @@ function offsetCenter(){
   // console.log(gap);
 }
 
-function clrPrem(){
-    pric.value = '';
+function clrPrem(flag){
     pric.className = '';
-    prem.value = '';
     prem.className = '';
+    pric.value = '';
+    prem.value = '';
+  if(flag){
+    premium.className = '';
+    gold.className    = '';
+  }
 }
 e = document.querySelectorAll('input[name="type"]');
 for(let i = 0; i < e.length; i++){
   e[i].addEventListener("click", function(event){ 
-    clrPrem();
-    premium.className = '';
-    gold.className    = '';
+    clrPrem(1);
   });
 };
 premium.addEventListener('click', function (event) {
@@ -356,81 +349,7 @@ function setSpot(){
   silver.value = 27.972;
   render();
 };
-// document.getElementById('date').innerHTML = api.date;
-
-// if(api.token && api.date != today())
-//   getSpotPrice()
-//     .catch(error => console.log('error', error));
-
-// function clrDate(){
-//   document.getElementById('date').innerHTML = api.date = '';
-//   localStorage.setItem("goldapi", JSON.stringify(api));
-// }
-
 /*
-function render(){
-  let evt = document.createEvent("HTMLEvents");
-  evt.initEvent("change", false, true);
-  console.log("event", evt);
-  silver.dispatchEvent(evt);
-}
-
-
-  fetch("https://www.goldapi.io/api/XAU/USD", requestOptions)
-    .then(response => response.text())
-    .then(result => { 
-      console.log(result);
-      let data = JSON.parse(result);
-      if('price' in data){
-        api.gold = gold.value = data["price"];
-      }
-    })
-    .catch(error => {
-      console.log('error', error);
-    });
-
-  fetch("https://www.goldapi.io/api/XAG/USD", requestOptions)
-    .then(response => response.text())
-    .then(result => { 
-      console.log(result);
-      let data = JSON.parse(result);
-      if('price' in data){
-        api.silver = silver.value = data["price"]; 
-        // render();
-      }
-      api.date = today();
-      localStorage.setItem("goldapi", JSON.stringify(api));
-      document.getElementById('date').innerHTML = api.date;
-    })
-    .catch(error => {
-      console.log('error', error);
-    });
-  getResponse("https://www.goldapi.io/api/XAU/USD")
-  .then(data => {
-    if('price' in data){
-      api.gold = data["price"];
-      api.date = today();
-      localStorage.setItem("goldapi", JSON.stringify(api));
-      document.getElementById('date').innerHTML = api.date;
-    }})
-  .catch(error => console.log('error', error))
-  getResponse("https://www.goldapi.io/api/XAG/USD")
-  .then(data => {
-    if('price' in data){
-      api.silver = data["price"]; 
-      api.date = today();
-      localStorage.setItem("goldapi", JSON.stringify(api));
-      document.getElementById('date').innerHTML = api.date;
-    }})
-  .catch(error => console.log('error', error))
-  console.log('fetch',api);
-}
-      h2 {margin: 10px;}
-      #dollar  {margin-top:20px;}
-
-  coinflation.com 90% @ .7234 (or .715 troy oz / $1 face for wear)
-  https://youtu.be/xniXT04Q8RE?t=55
-
   https://stackoverflow.com/questions/114543/how-can-i-horizontally-center-an-element
   https://codepen.io/alexandredees/pen/DbXggK
   https://www.goldapi.io/dashboard - barter/misc/_token.txt
