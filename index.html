@@ -13,6 +13,7 @@
     .warn {background-color: #e9dbf5;} /* #efe4f7; #E6E6FA;}*/
     #gold,
     input[type="text"] {font-size: 24px; text-align: right;  border-radius: 6px; width: 90px; border-width: thin; padding-right: 8px;}
+    #price {width: 100px;}
     input[type=button] {font-size: 24px; text-align: center; border-radius: 6px; margin: 3px; border-width: thin;}
     button {background-color: #E6E6FA; font-size:24px; border-radius: 6px; border-width: 1px;}
     button {min-width: 32px;}
@@ -86,10 +87,11 @@
   <div class="l">ozt:<div id="troy_ounce">2.1</div></div>
   <div class="r">Total:<div id="grand_total"></div></div></td></tr>
 <tr><td colspan="7"><hr><div id="prem-hd">Premiums</div><br><hr>
-  <div class=l style="margin-left:25px;">$1 face of 
-    <input type="radio" id="junk" name="type" value=".7234" checked><label for="html">junk</label>
+  <div class=l style="margin-left:0;">$1 face 
+    <input type="radio" id="junk" name="type" value=".715" checked><label for="html">junk</label>
     <input type="radio" id="doll" name="type" value=".7734"><label for="html">dollar</label>
-    <input type="radio" id="bull" name="type" value="1"><label for="html">bullion</label></div><br>
+    <input type="radio" id="bull" name="type" value="1"><label for="html">bullion</label></div>
+    <input type="radio" id="mbox" name="type" value="500"><label for="html">mbox</label></div><br>
   <div class="l"><label for="price">Price: </label>
     <input id="price" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value=""></div>
     <div class="l" id="premium">&nbsp;</div>
