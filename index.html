@@ -112,10 +112,10 @@ let spot, amt, troy = .715, db = {
     "dime": {"fract": .10, "count": 0, "price": 0, "total": 0}, 
     "nick": {"fract": .05, "count": 0, "price": 0, "total": 0}  // no 90% nickels; a nickel is the LCD
   },
-  count = () => 28*db["dolr"]["count"]
-              + 10*db["half"]["count"]
-              +  5*db["quar"]["count"] 
-              +  2*db["dime"]["count"];
+  nickel_count = () => 28 * db.dolr.count
+                     + 10 * db.half.count
+                     +  5 * db.quar.count 
+                     +  2 * db.dime.count;
 
   nick = document.getElementById("nick"),
   silver = document.getElementById("spot"),
@@ -250,32 +250,32 @@ function render(){ console.trace();
   spot = parseFloat(silver.value);
   amt  = parseFloat(buy.value);
 
-  db["nick"]["count"]  = Math.floor(amt / (spot * troy * .05));
+  db.nick.count  = Math.floor(amt / (spot * troy * .05));
 
   if(rnd.className != 'toggled'){
-    db["dolr"]["count"]  = Math.floor(db["nick"]["count"] / 28); // 1.40/.05
-    db["nick"]["count"] -= Math.floor(db["dolr"]["count"] * 28);
+    db.dolr.count  = Math.floor(db.nick.count / 28); // 1.40/.05
+    db.nick.count -= Math.floor(db.dolr.count * 28);
   }else{
-    db["dolr"]["count"]  = 0;
+    db.dolr.count  = 0;
   }
-  if(db["dolr"]["count"] > 0 && db["nick"]["count"] < 4 && db["nick"]["count"] % 2 != 0){
-     db["dolr"]["count"] -= 1;
-     db["nick"]["count"] += 28;
+  if(db.dolr.count > 0 && db.nick.count < 4 && db.nick.count % 2 != 0){
+     db.dolr.count -= 1;
+     db.nick.count += 28;
   }
-  db["quar"]["count"]  = Math.floor(db["nick"]["count"] / 5); 
-  db["nick"]["count"] -= Math.floor(db["quar"]["count"] * 5);
-  if(db["quar"]["count"] > 0 && db["nick"]["count"] % 2 != 0){
-     db["quar"]["count"] -= 1;
-     db["nick"]["count"] += 5;
+  db.quar.count  = Math.floor(db.nick.count / 5); 
+  db.nick.count -= Math.floor(db.quar.count * 5);
+  if(db.quar.count > 0 && db.nick.count % 2 != 0){
+     db.quar.count -= 1;
+     db.nick.count += 5;
   }
-  db["dime"]["count"]  = Math.floor(db["nick"]["count"] / 2);  
-  db["nick"]["count"] -= Math.floor(db["dime"]["count"] * 2);
+  db.dime.count  = Math.floor(db.nick.count / 2);  
+  db.nick.count -= Math.floor(db.dime.count * 2);
 
   if(ken.className != 'toggled'){
-    db["half"]["count"]  = Math.floor(db["quar"]["count"] / 2);  
-    db["quar"]["count"] -= Math.floor(db["half"]["count"] * 2);
+    db.half.count  = Math.floor(db.quar.count / 2);  
+    db.quar.count -= Math.floor(db.half.count * 2);
   }else{
-    db["half"]["count"]  = 0;
+    db.half.count  = 0;
   }
 
   document.querySelectorAll('.coin').forEach(e => fn(e));
@@ -289,9 +289,9 @@ for(let i = 0; i < e.length; i++){
     for(let i = 0; i < e.length; i++){
       n += parseFloat(e[i].textContent * db[e[i].id]["fract"]);
     } 
-    face.innerHTML = (n - db["dolr"]["count"] * (db["dolr"]["fract"] -1)).toFixed(2);     
+    face.innerHTML = (n - db.dolr.count * (db.dolr.fract -1)).toFixed(2);     
     ozt.innerHTML = (n * troy).toFixed(2);  
-    buy.value = (count() * spot * troy * .05 + .01).toFixed(2);
+    buy.value = (nickel_count() * spot * troy * .05 + .01).toFixed(2);
   });
 };
 
@@ -309,17 +309,18 @@ function fn(e){
   }
 
   let key = td[1].id;
-  db[key]["count"] = Math.max(0, parseFloat(db[key]["count"] + inc));
-  db[key]["price"] =(db[key]["fract"] * spot * troy);
-  db[key]["total"] =(db[key]["count"] * db[key]["price"]);
-  td[1].innerHTML  = db[key]["count"];
-  td[4].innerHTML  = db[key]["price"].toFixed(3);
-  td[6].innerHTML  = db[key]["total"].toFixed(2);
+  db[key].count = Math.max(0, parseFloat(db[key].count + inc));
+  db[key].price = db[key].fract * spot * troy;
+  db[key].total = db[key].count * db[key].price;
+  td[1].innerHTML  = db[key].count;
+  td[4].innerHTML  = db[key].price.toFixed(3);
+  td[6].innerHTML  = db[key].total.toFixed(2);
   console.log(`key= ${key}`,db[key]);
 
   grand.innerHTML  = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
   let n = amt / (spot * troy); // face based on buy value
-  face.innerHTML = (n - db["dolr"]["count"] * (db["dolr"]["fract"] - 1)).toFixed(2); // adjust for rounds
+  face.innerHTML = (n - db.dolr.count * (db.dolr.fract - 1)).toFixed(2); // adjust for rounds
+//face.innerHTML = (n).toFixed(2);
   ozt.innerHTML = (n * troy).toFixed(2);
   offsetCenter();
 }
@@ -353,12 +354,12 @@ premium.addEventListener('click', function (event) {
 });
 rnd.addEventListener('click', function (event) {
   event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
-  buy.value = (count() * spot * troy * .05 + .01).toFixed(2);
+  buy.value = (nickel_count() * spot * troy * .05 + .01).toFixed(2);
   render();
 });
 ken.addEventListener('click', function (event) {
   event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
-  buy.value = (count() * spot * troy * .05 + .01).toFixed(2);
+  buy.value = (nickel_count() * spot * troy * .05 + .01).toFixed(2);
   render();
 });
 function setSpot(){
@@ -368,10 +369,10 @@ function setSpot(){
 nick.addEventListener('click', function (event) {
   if(nick.className == 'toggled'){
      nick.className = '';
-     buy.value = ((count() - 1) * spot * troy * .05 + .01).toFixed(2);
+     buy.value = ((nickel_count() - 1) * spot * troy * .05 + .01).toFixed(2);
   }else{
      nick.className = 'toggled';
-     buy.value = ((count() + 1) * spot * troy * .05 + .01).toFixed(2);
+     buy.value = ((nickel_count() + 1) * spot * troy * .05 + .01).toFixed(2);
   }
   nick.blur();
   render();
