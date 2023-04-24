@@ -22,21 +22,16 @@
     td:nth-child(5) {min-width: 74px; padding: 0 10px;}
     td:nth-child(4) {padding-left: 10px;}
     td:nth-child(7) {min-width: 116px; padding: 0 10px;}
-    tr:nth-child(11), tr:nth-child(12) {background-color: rgba(246,244,240,.9);}
-    tr:nth-child(4) td:nth-child(1) {text-align: center;}
-    tr:nth-child(6) td:nth-child(1) {text-align: center;}
-    tr:nth-child(8) td:nth-child(1) {text-align: center;}
-    tr:nth-child(10) td:nth-child(1) {text-align: center;}
+    tr:nth-child(11),tr:nth-child(12) {background-color: rgba(246,244,240,.9);}
+    tr:nth-child(4)  td:nth-child(1)  {text-align: center;}
+    tr:nth-child(6)  td:nth-child(1)  {text-align: center;}
+    tr:nth-child(8)  td:nth-child(1)  {text-align: center;}
+    tr:nth-child(10) td:nth-child(1)  {text-align: center;}
     table {
       background-image: url("cover.jpg");
       background-size: 100% 100%;
       background-color: rgba(255,255,255,0.6);
       background-blend-mode: lighten;
-/*      
-      background-size: contain;
-      background-repeat: no-repeat;  
-    #gold                      {background-color: #fbf6c7;}
-*/
       margin: auto;
     }
     hr {margin:5px 0;}
@@ -45,7 +40,6 @@
     .l {float: left;}
     .r {float: right;}
     .a {padding:0 0 0 5px !important;}
-    /*.h {align:right;}*/
     #qua, #dim {color: black;}
     #face_total, #troy_ounce, #grand_total {padding: 0 10px;}
     #price, #prem {margin-top: 5px;}
@@ -67,8 +61,7 @@
 </head>
 <body><div id="container">
 <table>
-<tr><!--td><a id=nick>5¢</a></td-->
-    <td colspan="6"><a id=nick>5¢</a><h2>Silver Barter</h2></td>
+<tr><td colspan="6"><a id=nick>5¢</a><h2>Silver Barter</h2></td>
     <td class=a>
   <a id="dollar" href="javascript:setSpot();">$28 Spot Price</a><br>
   <a id="date" href="javascript:getSpot();">Get Spot Price</a><br>
@@ -95,6 +88,7 @@
     <input type="radio" id="junk" name="type" value=".715" checked><label for="html">junk</label>
     <input type="radio" id="doll" name="type" value=".7734"><label for="html">dollar</label>
     <input type="radio" id="bull" name="type" value="1"><label for="html">BU</label>
+    <input type="radio" id="kilo" name="type" value="32.15"><label for="html">K</label>
     <input type="radio" id="mbox" name="type" value="500"><label for="html">mbox</label></div><br>
   <div class="l"><label for="price">Price: </label>
     <input id="price" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value=""></div>
@@ -115,20 +109,19 @@ let spot, amt, troy = .715, db = {
   nickel_count = () => 28 * db.dolr.count
                      + 10 * db.half.count
                      +  5 * db.quar.count 
-                     +  2 * db.dime.count;
-
-  nick = document.getElementById("nick"),
-  silver = document.getElementById("spot"),
-  gold = document.getElementById('gold'),
-  buy = document.getElementById("amt"),
-  face = document.getElementById("face_total"),
-  ozt  = document.getElementById("troy_ounce"),
-  grand = document.getElementById("grand_total"),
-  rnd = document.getElementById("rnd"),
-  ken = document.getElementById("ken"),
+                     +  2 * db.dime.count,
   premium = document.getElementById('premium'),
+  silver = document.getElementById("spot"),
+  grand = document.getElementById("grand_total"),
+  nick = document.getElementById("nick"),
+  gold = document.getElementById('gold'),
+  face = document.getElementById("face_total"),
   prem = document.getElementById("prem"),
   pric = document.getElementById("price"),
+  buy  = document.getElementById("amt"),
+  ozt  = document.getElementById("troy_ounce"),
+  rnd  = document.getElementById("rnd"),
+  ken  = document.getElementById("ken"),
   today = () => new Date().toISOString().split('T')[0],
   myHeaders = new Headers(),
   requestOptions = {
@@ -346,26 +339,31 @@ for(let i = 0; i < e.length; i++){
   e[i].addEventListener("click", function(event){ 
     clrPrem(1);
   });
-};
+}
+
 premium.addEventListener('click', function (event) {
   event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
   gold.className         = 'toggled' == gold.className         ? '' : 'toggled';
   clrPrem();
 });
+
 rnd.addEventListener('click', function (event) {
   event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
   buy.value = (nickel_count() * spot * troy * .05 + .01).toFixed(2);
   render();
 });
+
 ken.addEventListener('click', function (event) {
   event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
   buy.value = (nickel_count() * spot * troy * .05 + .01).toFixed(2);
   render();
 });
+
 function setSpot(){
   silver.value = 27.972;
   render();
-};
+}
+
 nick.addEventListener('click', function (event) {
   if(nick.className == 'toggled'){
      nick.className = '';
@@ -377,6 +375,7 @@ nick.addEventListener('click', function (event) {
   nick.blur();
   render();
 });
+
 /*
   https://stackoverflow.com/questions/114543/how-can-i-horizontally-center-an-element
   https://codepen.io/alexandredees/pen/DbXggK
