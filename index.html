@@ -98,6 +98,7 @@
     <br>&nbsp;
 </td></tr>
 </table></div>
+<div id="vp" style="display=block"></div>
 <script>
 let spot, amt, troy = .715, db = {
     "dolr": {"fract": 1/troy, "count": 0, "price": 0, "total": 0},
@@ -375,7 +376,7 @@ nick.addEventListener('click', function (event) {
   nick.blur();
   render();
 });
-
+getElementById("vp").innerHTML = window.innerWidth;
 /*
   https://stackoverflow.com/questions/114543/how-can-i-horizontally-center-an-element
   https://codepen.io/alexandredees/pen/DbXggK
