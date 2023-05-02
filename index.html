@@ -28,7 +28,8 @@
     tr:nth-child(6)  td:nth-child(1)  {text-align: center;}
     tr:nth-child(8)  td:nth-child(1)  {text-align: center;}
     tr:nth-child(10) td:nth-child(1)  {text-align: center;}
-    table {
+    tr:nth-child(13) td:nth-child(1)  {text-align: center;}
+    #bag {
       background-image: url("cover.jpg");
       background-size: 100% 100%;
       background-color: rgba(255,255,255,0.6);
@@ -49,19 +50,26 @@
     #premium                   {background-color: white; border-radius:50%;font-size: 12px; margin:15px 0 0 40px; width:12px; height:12px; float: left; border:1px solid black;}
     #premium.toggled           {background-color: #FFD700;}
     #gold.toggled              {background-color: #FFEA00;}
-    #rnd.toggled, #ken.toggled {background-color: #F8C8DC;}
-    #rnd,         #ken         {background-color: #F0F0F0;}
-    #rnd.toggled, #ken.toggled {background-color: #F8C8DC;}
+    #rnd.toggled, #ken.toggled, #prm.toggled {background-color: #F8C8DC;}
+    #rnd,         #ken,         #prm         {background-color: #F0F0F0;}
+  /*#rnd.toggled, #ken.toggled               {background-color: #F8C8DC;}*/
     #fbp, #date,  #dollar      {font-size: 12px; text-decoration: none; color:#551A8B;}
     #nick {border-radius:50%; border:1px solid #ddd; padding:5px; margin-right:40px; cursor: default;}
     #nick.toggled {background-color: #F8C8DC;}
+    #lst {display:block; width:435px;}
+    #tbl {margin: auto;}
+    #tbl td {text-align: right;}
+  /*#tbl td:nth-child(3) {text-align: left;}*/
+
     @media only screen and (max-width: 500px) {
+      /* label[for=html] {font-size:22px;} */
+      #hide {display:none;}
       #premium {width:16px; height:16px;}
     }
   </style>
 </head>
 <body><div id="container">
-<table>
+<table id=bag>
 <tr><td colspan="6"><a id=nick>5¢</a><h2>Silver Barter</h2></td>
     <td class=a>
   <a id="dollar" href="javascript:setSpot();">$28 Spot Price</a><br>
@@ -84,8 +92,8 @@
   <div class="l">Face:<div id="face_total"></div></div>
   <div class="l">ozt:<div id="troy_ounce">2.1</div></div>
   <div class="r">Total:<div id="grand_total"></div></div></td></tr>
-<tr><td colspan="7"><hr><div id="prem-hd">Premiums</div><br><hr>
-  <div class=l style="margin-left:0;text-align:left;">$1 face 
+<tr><td colspan="7"><hr><input type=button value="Premiums" id="prm"><!--div id="prem-hd">Premiums</div--><br><hr>
+  <div class=l style="margin-left:0;text-align:left;"><div id=hide>$1 face</div>
     <input type="radio" id="junk" name="type" value=".715" checked><label for="html">junk</label>
     <input type="radio" id="doll" name="type" value=".7734"><label for="html">dollar</label>
     <input type="radio" id="bull" name="type" value="1"><label for="html">BU</label>
@@ -99,6 +107,7 @@
     <br>&nbsp;
 </td></tr>
 </table></div>
+<div id="lst"><table id=tbl><tr><th>Price</th><th>Prem</th><th>Pct</th></tr></table></div>
 <div id="vp"></div>
 <script>
 let spot, amt, troy = .715, db = {
@@ -124,6 +133,8 @@ let spot, amt, troy = .715, db = {
   ozt  = document.getElementById("troy_ounce"),
   rnd  = document.getElementById("rnd"),
   ken  = document.getElementById("ken"),
+  prm  = document.getElementById("prm"),
+  pct  = document.getElementById("pct"),
   today = () => new Date().toISOString().split('T')[0],
   myHeaders = new Headers(),
   requestOptions = {
@@ -194,6 +205,7 @@ pric.onchange = function(event){
   pric.blur(); // event.target
   prem.blur(); 
   // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
+  list_prems(parseFloat(factor));
 };
 
 prem.onchange = function(event){
@@ -211,7 +223,24 @@ prem.onchange = function(event){
   prem.value = parseFloat(pct).toFixed(1) +"%";
   prem.blur(); // event.target
   // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
+  list_prems(parseFloat(factor));
 };
+
+function list_prems(factor){
+  let tbl='';
+  if(premium.className == "toggled"){
+    for(let i=0;i<13;i++){
+      j = 4.5 + i*.5;
+      tbl+=`<tr><td>${(gold.value*(1+j/100)).toFixed(2)}</td><td>${(gold.value*(j/100)).toFixed(2)}</td><td>${j.toFixed(1)}%</td></tr>\n`;
+    }
+  }else{
+    for(let i=0;i<26;i++){
+      j = 10 + i*2;
+      tbl+=`<tr><td>${(factor*silver.value*(1+ j/100)).toFixed(2)}</td><td>${(factor*silver.value*(j/100)).toFixed(2)}</td><td>${j.toFixed(1)}%</td></tr>\n`;
+    }
+  }
+  lst.innerHTML = `<table id=tbl><tr><th>Price</th><th>Prem</th><th>Pct</th></tr>\n${tbl}</table>`;
+}
 
 buy.onchange = function(event){
   event.target.value = parseFloat(event.target.value).toFixed(2);
@@ -361,6 +390,12 @@ ken.addEventListener('click', function (event) {
   render();
 });
 
+prm.addEventListener('click', function (event) {
+  event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
+  lst.style.display = event.target.className == 'toggled' ? 'block' : 'none';
+  render();
+});
+
 function setSpot(){
   silver.value = 27.972;
   render();
@@ -385,6 +420,7 @@ document.getElementById("vp").innerHTML = window.innerWidth;
   https://www.ngccoin.com/price-guide/coin-melt-values.aspx
   https://www.cointalk.com/threads/715-or-7234-to-calculate-90.290085/
   https://www.coinflation.com/coins/1932-1964-Silver-Washington-Quarter-Value.html
+  Local Barter - 192.168.0.10:9000 - ipconfig /all
 */
 </script>
 </body>
