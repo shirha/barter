@@ -393,7 +393,7 @@ ken.addEventListener('click', function (event) {
 
 prm.addEventListener('click', function (event) {
   event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
-  lst.style.display = event.target.className == 'toggled' ? 'block' : 'none';
+  lst.style.display = event.target.className == 'toggled' ? 'none' : 'block';
   render();
 });
 
