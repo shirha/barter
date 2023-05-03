@@ -47,7 +47,7 @@
     #price, #prem {margin-top: 5px;}
     #price.warning, #prem.warning {color:red;}
     #prem-hd {float:left; margin-left:150px; font-size:24px; font-weight:bold;}
-    #premium                   {background-color: white; border-radius:50%;font-size: 12px; margin:15px 0 0 40px; width:12px; height:12px; float: left; border:1px solid black; cursor:default;}
+    #premium, #qrcode          {background-color: white; border-radius:50%;font-size: 12px; margin:15px 0 0 40px; width:12px; height:12px; float: left; border:1px solid black; cursor:default;}
     #premium.toggled           {background-color: #FFD700;}
     #gold.toggled              {background-color: #FFEA00;}
     #rnd.toggled, #ken.toggled, #prm.toggled {background-color: #F8C8DC;}
@@ -63,6 +63,24 @@
     #tbl tr {background-color: transparent;}
   /*#tbl td:nth-child(3) {text-align: left;}*/
 
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  max-width: 480px;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: #474e5d;
+/*  padding: 10%;
+  background-image: url("Silver Barter QR.png");
+  background-size: 90%;
+  background-repeat: no-repeat; */
+}
+img {width:75%; margin: 10%}
     @media only screen and (max-width: 500px) {
       /* label[for=html] {font-size:22px;} */
       #hide {display:none;}
@@ -79,6 +97,7 @@
   <a id=fbp href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" target="_blank">Find Bullion Prices</a></td></tr>
 <tr><td colspan="7">
   <div class="l">Gold:&nbsp;<input id="gold" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
+  <div class="l" id="qrcode">&nbsp;</div>
 <tr><td colspan="7">
   <div class="l">Spot:&nbsp;<input id="spot" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
   <div class="r">Amt:&nbsp;<input id="amt" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value="28.00"></div></td></tr>
@@ -111,6 +130,9 @@
 </table></div>
 <div id="lst"></div>
 <div id="vp"></div>
+<div id="id01" class="modal">
+  <img src="Silver Barter QR.png">
+</div>
 <script>
 let spot, amt, troy = .715, db = {
     "dolr": {"fract": 1/troy, "count": 0, "price": 0, "total": 0},
@@ -418,6 +440,18 @@ nick.addEventListener('click', function (event) {
   render();
 });
 document.getElementById("vp").innerHTML = window.innerWidth;
+
+let modal = document.getElementById('id01');
+document.getElementById("qrcode").addEventListener('click', function (event) {
+  modal.style.display='block';
+});
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target.parentNode == modal || event.target == modal) {
+    modal.style.display = "none";
+  }
+}
 /*
   https://stackoverflow.com/questions/114543/how-can-i-horizontally-center-an-element
   https://codepen.io/alexandredees/pen/DbXggK
@@ -425,6 +459,7 @@ document.getElementById("vp").innerHTML = window.innerWidth;
   https://www.ngccoin.com/price-guide/coin-melt-values.aspx
   https://www.cointalk.com/threads/715-or-7234-to-calculate-90.290085/
   https://www.coinflation.com/coins/1932-1964-Silver-Washington-Quarter-Value.html
+  https://me-qr.com/
   Local Barter - 192.168.0.10:9000 - ipconfig /all
 */
 </script>
