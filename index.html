@@ -47,7 +47,7 @@
     #price, #prem {margin-top: 5px;}
     #price.warning, #prem.warning {color:red;}
     #prem-hd {float:left; margin-left:150px; font-size:24px; font-weight:bold;}
-    #premium                   {background-color: white; border-radius:50%;font-size: 12px; margin:15px 0 0 40px; width:12px; height:12px; float: left; border:1px solid black;}
+    #premium                   {background-color: white; border-radius:50%;font-size: 12px; margin:15px 0 0 40px; width:12px; height:12px; float: left; border:1px solid black; cursor:default;}
     #premium.toggled           {background-color: #FFD700;}
     #gold.toggled              {background-color: #FFEA00;}
     #rnd.toggled, #ken.toggled, #prm.toggled {background-color: #F8C8DC;}
@@ -58,7 +58,8 @@
     #nick.toggled {background-color: #F8C8DC;}
     #lst {display:block; width:435px;}
     #tbl {margin: auto;}
-    #tbl td {text-align: right;}
+    #tbl th {text-align: center; min-width: 70px;}
+    #tbl td {text-align: right; padding: 0 10px;}
     #tbl tr {background-color: transparent;}
   /*#tbl td:nth-child(3) {text-align: left;}*/
 
@@ -108,7 +109,7 @@
     <br>&nbsp;
 </td></tr>
 </table></div>
-<div id="lst"><table id=tbl><tr><th>Price</th><th>Prem</th><th>Pct</th></tr></table></div>
+<div id="lst"></div>
 <div id="vp"></div>
 <script>
 let spot, amt, troy = .715, db = {
@@ -365,7 +366,10 @@ function clrPrem(flag){
     premium.className = '';
     gold.className    = '';
   }
+  lst.innerHTML = `<table id=tbl><tr><th>Price</th><th>Prem</th><th>Pct</th></tr></table>`;
 }
+clrPrem();
+
 e = document.querySelectorAll('input[name="type"]');
 for(let i = 0; i < e.length; i++){
   e[i].addEventListener("click", function(event){ 
