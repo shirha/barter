@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="mobile-web-app-capable" content="yes">
-  <link rel="manifest" href="manifest.json">
+<!--   <link rel="manifest" href="manifest.json">
   <link rel="shortcut icon" type="image/png" href="favicon-512.png">
-  <title>Silver Barter</title>
+ -->  <title>Silver Barter</title>
   <style> 
 
     #help {position: absolute; top:5px; left:190px; background-color: transparent; /*border-radius: 4px; margin:0;*/}
@@ -57,7 +57,7 @@
     #rnd,         #ken,         #prm         {background-color: #F0F0F0;}
   /*#rnd.toggled, #ken.toggled               {background-color: #F8C8DC;}*/
     #fbp, #date,  #dollar      {font-size: 12px; text-decoration: none; color:#551A8B;}
-    #nick {border-radius:50%; border:1px solid #ddd; padding:5px; margin-right:40px; cursor: default;}
+    #nick {border-radius:50%; border:1px solid #ddd; padding:5px; margin-right:30px; cursor: default;}
     #nick.toggled {background-color: #F8C8DC;}
     #lst {display:block; width:435px;}
     #tbl {margin: auto;}
@@ -81,7 +81,6 @@
 }
 img {width: 80%; margin: 10%;}
     @media only screen and (max-width: 500px) {
-      /* label[for=html] {font-size:22px;} */
       #hide {display:none;}
       #premium {width:16px; height:16px;}
     }
@@ -177,11 +176,21 @@ gold.value = parseFloat(api.gold).toFixed(2);
 silver.value = parseFloat(api.silver).toFixed(3);
 if(!api.token.match(/goldapi/)){
   silver.classList.add("warn");
-  let e = document.getElementById("date");
+  let e = document.getElementById("date"); // Get Spot Price url
   e.href = "https://www.goldapi.io/";
   e.target = "_blank";
 }
-render();
+
+document.addEventListener("DOMContentLoaded", function() {
+  [rnd, ken].forEach(e => {
+    console.log(e.value);
+    if(!(localStorage.getItem(e.value) === null)){
+      e.className = 'toggled';
+    console.log(e.className);
+    }
+  });
+  render();
+});
 
 async function getSpot(){
   if(!api.token.match(/goldapi/)) return;
@@ -407,13 +416,27 @@ premium.addEventListener('click', function (event) {
 });
 
 rnd.addEventListener('click', function (event) {
-  event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
+  // event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
+  if(event.target.className == 'toggled'){
+    event.target.className = '';
+    localStorage.removeItem(event.target.value);
+  }else{
+    event.target.className = 'toggled';
+    localStorage.setItem(event.target.value, 'toggled');
+  }
   buy.value = (nickel_count() * spot * troy * .05 + .01).toFixed(2);
   render();
 });
 
 ken.addEventListener('click', function (event) {
-  event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
+  // event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
+  if(event.target.className == 'toggled'){
+    event.target.className = '';
+    localStorage.removeItem(event.target.value);
+  }else{
+    event.target.className = 'toggled';
+    localStorage.setItem(event.target.value, 'toggled');
+  }
   buy.value = (nickel_count() * spot * troy * .05 + .01).toFixed(2);
   render();
 });
@@ -453,6 +476,7 @@ window.onclick = function(event) {
     modal.style.display = "none";
   }
 }
+
 /*
   https://stackoverflow.com/questions/114543/how-can-i-horizontally-center-an-element
   https://codepen.io/alexandredees/pen/DbXggK
