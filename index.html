@@ -9,8 +9,9 @@
   <title>Silver Barter</title>
   <style> 
     body {font-size: 24px; font-family: Helvetica;}
-    #help {position: absolute; top:5px; left:190px; background-color: transparent;}
-    #help img { margin:0; height: 20px;}
+/*    #help {position: absolute; top:5px; left:190px; background-color: transparent;}*/
+    #help img, #qrcode img {margin-top:10px; height: 20px;}
+/*    #qrcode img {margin-top:20px; height: 20px; /*margin:5px 0 0 40px;*/}*/
     #vp {display:block; font-size: 12px; color: gray;}
     #container {display: block; max-width: 480px;}
     .warn {background-color: #e9dbf5;} /* #efe4f7; #E6E6FA;}*/
@@ -26,6 +27,7 @@
     td:nth-child(4) {padding-left: 10px;}
     td:nth-child(7) {min-width: 116px; padding: 0 10px;}
   /*tr:nth-child(11),tr:nth-child(12) {background-color: rgba(246,244,240,.9);}*/
+    tr:nth-child(1)  td:nth-child(1)  {text-align: center;}
     tr:nth-child(4)  td:nth-child(1)  {text-align: center;}
     tr:nth-child(6)  td:nth-child(1)  {text-align: center;}
     tr:nth-child(8)  td:nth-child(1)  {text-align: center;}
@@ -40,29 +42,30 @@
     }
     hr {margin:5px 0;}
     div, h2 {display: inline-block;}
-    h2 {margin:30px 0;}
+    h2 {margin:0 0 5px 0;}
     .l {float: left;}
     .r {float: right;}
+    .m {float: left; margin-left: 75px; padding-bottom: 10px;}
     .a {padding:0 0 0 5px !important;}
     #qua, #dim {color: black;}
     #face_total, #troy_ounce, #grand_total {padding: 0 10px;}
     #price, #prem {margin-top: 5px;}
     #price.warning, #prem.warning {color:red;}
     #prem-hd {float:left; margin-left:150px; font-size:24px; font-weight:bold;}
-    #premium, #qrcode          {background-color: white; border-radius:50%;font-size: 12px; margin:15px 0 0 40px; width:12px; height:12px; float: left; border:1px solid black; cursor:default;}
+/*    #premium, #qrcode          {background-color: white; border-radius:50%;font-size: 12px; margin:15px 0 0 40px; width:12px; height:12px; float: left; border:1px solid black; cursor:default;}*/
+    #premium                   {background-color: white; border-radius:50%;font-size: 12px; margin:15px 0 0 40px; width:12px; height:12px; float: left; border:1px solid black; cursor:default;}
     #premium.toggled           {background-color: #FFD700;}
     #gold.toggled              {background-color: #FFEA00;}
     #rnd.toggled, #ken.toggled, #prm.toggled {background-color: #F8C8DC;}
     #rnd,         #ken,         #prm         {background-color: #F0F0F0;}
     #fbp, #date,  #dollar      {font-size: 12px; text-decoration: none; color:#551A8B;}
-    #nick {border-radius:50%; border:1px solid #ddd; padding:5px; margin-right:30px; cursor: default;}
+    #nick {border-radius:50%; border:1px solid #ddd; cursor: default; padding:5px; /*margin-right:30px;*/}
     #nick.toggled {background-color: #F8C8DC;}
     #lst {display:block; width:435px;}
     #tbl {margin: auto;}
     #tbl th {text-align: center; min-width: 70px;}
     #tbl td {text-align: right; padding: 0 10px;}
     #tbl tr {background-color: transparent;}
-
     /* The Modal (background) */
     .modal {
       display: none; /* Hidden by default */
@@ -86,14 +89,18 @@
 </head>
 <body><div id="container">
 <table id=bag>
-<tr><td colspan="6"><a id=nick>5¢</a><h2>Silver Barter</h2></td>
-    <td class=a>
-  <a id="dollar" href="javascript:setSpot();">$28 Spot Price</a><br>
-  <a id="date" href="javascript:getSpot();">Get Spot Price</a><br>
-  <a id=fbp href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" target="_blank">Find Bullion Prices</a></td></tr>
+<tr><td colspan="7">
+  <div class="l" id="qrcode"><img src="qr_icon2.png"></div>
+  <h2>Silver Barter</h2>
+  <a id="help" href="help.html" target="_blank" class="r"><img src="help-icon2.png"></a><br>
+  <a id="date" href="javascript:getSpot();" class="l">Get Spot Price</a>
+  <a id="dollar" href="javascript:setSpot();" class="m">$28 Spot Price</a>
+  <a id=fbp href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" target="_blank" class="r">Find Bullion Prices</a>
+</td></tr>
 <tr><td colspan="7">
   <div class="l">Gold:&nbsp;<input id="gold" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
-  <div class="l" id="qrcode">&nbsp;</div>
+  <a id=nick>5¢</a>
+  <!--div class="l" id="qrcode">&nbsp;</div-->
 <tr><td colspan="7">
   <div class="l">Spot:&nbsp;<input id="spot" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
   <div class="r">Amt:&nbsp;<input id="amt" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value="28.00"></div></td></tr>
@@ -129,7 +136,6 @@
 <div id="id01" class="modal">
   <img src="Silver Barter QR2.png">
 </div>
-<a id="help" href="help.html" target="_blank"><img src="help-icon2.png">
 <script>
 let spot, amt, troy = .715, db = {
     "dolr": {"fract": 1/troy, "count": 0, "price": 0, "total": 0},
