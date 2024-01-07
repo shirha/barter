@@ -25,7 +25,7 @@
     td:nth-child(5) {min-width: 74px; padding: 0 10px;}
     td:nth-child(4) {padding-left: 10px;}
     td:nth-child(7) {min-width: 116px; padding: 0 10px;}
-    tr:nth-child(11),tr:nth-child(12) {background-color: rgba(246,244,240,.9);}
+  /*tr:nth-child(11),tr:nth-child(12) {background-color: rgba(246,244,240,.9);}*/
     tr:nth-child(4)  td:nth-child(1)  {text-align: center;}
     tr:nth-child(6)  td:nth-child(1)  {text-align: center;}
     tr:nth-child(8)  td:nth-child(1)  {text-align: center;}
@@ -129,7 +129,6 @@
 <div id="id01" class="modal">
   <img src="Silver Barter QR2.png">
 </div>
-<!--div id="help"><a href="help.html" target="_blank"><img src="help-icon.png"></a></div-->
 <a id="help" href="help.html" target="_blank"><img src="help-icon2.png">
 <script>
 let spot, amt, troy = .715, db = {
@@ -179,7 +178,7 @@ if(!api.token.match(/goldapi/)){
   e.target = "_blank";
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+// document.addEventListener("DOMContentLoaded", function() {
   [rnd, ken].forEach(e => {
     console.log(e.value);
     if(!(localStorage.getItem(e.value) === null)){
@@ -188,7 +187,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
   render();
-});
+// });
 
 async function getSpot(){
   if(!api.token.match(/goldapi/)) return;
