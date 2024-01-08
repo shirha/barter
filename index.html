@@ -9,9 +9,7 @@
   <title>Silver Barter</title>
   <style> 
     body {font-size: 24px; font-family: Helvetica;}
-/*    #help {position: absolute; top:5px; left:190px; background-color: transparent;}*/
     #help img, #qrcode img {margin-top:10px; height: 20px;}
-/*    #qrcode img {margin-top:20px; height: 20px; /*margin:5px 0 0 40px;*/}*/
     #vp {display:block; font-size: 12px; color: gray;}
     #container {display: block; max-width: 480px;}
     .warn {background-color: #e9dbf5;} /* #efe4f7; #E6E6FA;}*/
@@ -45,8 +43,7 @@
     h2 {margin:0 0 5px 0;}
     .l {float: left;}
     .r {float: right;}
-    .m {float: left; margin-left: 75px; padding-bottom: 10px;}
-    .a {padding:0 0 0 5px !important;}
+    .a {font-size: 12px; margin-bottom: 10px; display: block;}
     #qua, #dim {color: black;}
     #face_total, #troy_ounce, #grand_total {padding: 0 10px;}
     #price, #prem {margin-top: 5px;}
@@ -59,7 +56,7 @@
     #rnd.toggled, #ken.toggled, #prm.toggled {background-color: #F8C8DC;}
     #rnd,         #ken,         #prm         {background-color: #F0F0F0;}
     #fbp, #date,  #dollar      {font-size: 12px; text-decoration: none; color:#551A8B;}
-    #nick {border-radius:50%; border:1px solid #ddd; cursor: default; padding:5px; /*margin-right:30px;*/}
+    #nick {border-radius:50%; border:1px solid #888; cursor: default; padding:5px; /*margin-right:30px;*/}
     #nick.toggled {background-color: #F8C8DC;}
     #lst {display:block; width:435px;}
     #tbl {margin: auto;}
@@ -90,12 +87,14 @@
 <body><div id="container">
 <table id=bag>
 <tr><td colspan="7">
-  <div class="l" id="qrcode"><img src="qr_icon2.png"></div>
-  <h2>Silver Barter</h2>
-  <a id="help" href="help.html" target="_blank" class="r"><img src="help-icon2.png"></a><br>
-  <a id="date" href="javascript:getSpot();" class="l">Get Spot Price</a>
-  <a id="dollar" href="javascript:setSpot();" class="m">$28 Spot Price</a>
-  <a id=fbp href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" target="_blank" class="r">Find Bullion Prices</a>
+    <div class="l" id="qrcode"><img src="qr_icon2.png"></div>
+    <h2>Silver Barter</h2>
+    <a id="help" href="help.html" target="_blank" class="r"><img src="help-icon2.png"></a>
+  <div class="a">
+    <a id="date" class="l" href="javascript:getSpot();">Get Spot Price</a>
+    <a id="dollar" href="javascript:setSpot();">$28 Spot Price</a>
+    <a id=fbp class="r" href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" target="_blank">Find Bullion Prices</a>
+  </div>
 </td></tr>
 <tr><td colspan="7">
   <div class="l">Gold:&nbsp;<input id="gold" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
