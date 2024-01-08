@@ -8,7 +8,7 @@
   <link rel="shortcut icon" type="image/png" href="favicon-512.png">
   <title>Silver Barter</title>
   <style> 
-    body {font-size: 24px; font-family: Helvetica;}
+    body, input {font-size: 24px; font-family: Helvetica;}
     #help img, #qrcode img {margin-top:10px; height: 20px;}
     h2 {margin:0 0 8px 0;}
     .l {float: left;}
@@ -19,9 +19,9 @@
     #container {display: block; max-width: 480px;}
     .warn {background-color: #e9dbf5;} /* #efe4f7; #E6E6FA;}*/
     #gold,
-    input[type="text"] {font-size: 24px; text-align: right;  border-radius: 6px; width: 90px; border-width: thin; padding-right: 8px;}
+    input[type="text"] {text-align: right;  border-radius: 6px; width: 90px; border-width: thin; padding-right: 8px;}
     #price {width: 100px;}
-    input[type=button] {font-size: 24px; text-align: center; border-radius: 6px; margin: 3px; border-width: thin;}
+    input[type=button] {text-align: center; border-radius: 6px; margin: 3px; border-width: thin;}
     button {background-color: #E6E6FA; font-size:24px; border-radius: 6px; border-width: 1px;}
     button {min-width: 32px;}
     td {text-align: right;}
@@ -29,7 +29,6 @@
     td:nth-child(5) {min-width: 74px; padding: 0 10px;}
     td:nth-child(4) {padding-left: 10px;}
     td:nth-child(7) {min-width: 116px; padding: 0 10px;}
-  /*tr:nth-child(11),tr:nth-child(12) {background-color: rgba(246,244,240,.9);}*/
     tr:nth-child(1)  td:nth-child(1)  {text-align: center;}
     tr:nth-child(4)  td:nth-child(1)  {text-align: center;}
     tr:nth-child(6)  td:nth-child(1)  {text-align: center;}
@@ -81,7 +80,7 @@
     @media only screen and (max-width: 500px) {
       #hide {display:none;}
       #premium {width:16px; height:16px;}
-      body, input[type="text"], input[type=button] {font-size: 20px;}
+      body, input {font-size: 20px;}
     }
   /* https://www.w3schools.com/colors/colors_picker.asp */
   </style>
