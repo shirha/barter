@@ -13,28 +13,22 @@
     h2 {margin:0 0 8px 0;}
     .l {float: left;}
     .r {float: right;}
-    .a {font-size: 16px; margin-bottom: 14px; display: block;}
+    .a {font-size: 14px; margin-bottom: 14px; display: block;}
     #date,  #dollar, #fbp {text-decoration: none; color: #005999;} /* #551A8B; */
     #vp {display:block; font-size: 12px; color: gray;}
-    #container {display: block; max-width: 480px;}
+    #container {display: block; max-width: 480px; width: calc(100% - 20px);}
     .warn {background-color: #e9dbf5;} /* #efe4f7; #E6E6FA;}*/
     #gold,
     input[type="text"] {text-align: right;  border-radius: 6px; width: 90px; border-width: thin; padding-right: 8px;}
-    #price {width: 100px;}
+/*    #price {width: 100px;}*/
     input[type=button] {text-align: center; border-radius: 6px; margin: 3px; border-width: thin;}
     button {background-color: #E6E6FA; font-size:24px; border-radius: 6px; border-width: 1px;}
     button {min-width: 32px;}
-    td {text-align: right;}
-    td:nth-child(2) {min-width: 60px; padding: 0 10px; text-align: center;}
-    td:nth-child(5) {min-width: 74px; padding: 0 10px;}
-    td:nth-child(4) {padding-left: 10px;}
-    td:nth-child(7) {min-width: 116px; padding: 0 10px;}
-    tr:nth-child(1)  td:nth-child(1)  {text-align: center;}
-    tr:nth-child(4)  td:nth-child(1)  {text-align: center;}
-    tr:nth-child(6)  td:nth-child(1)  {text-align: center;}
-    tr:nth-child(8)  td:nth-child(1)  {text-align: center;}
-    tr:nth-child(10) td:nth-child(1)  {text-align: center;}
-    tr:nth-child(13) td:nth-child(1)  {text-align: center;}
+    td[colspan="7"] {text-align: center;}
+    tr:nth-child(3) td {text-align: right;}
+    td:nth-child(2),
+    td:nth-child(5),
+    td:nth-child(7)    {text-align: right; padding: 0 5px;}
     #bag {
       background-image: url("cover.jpg");
       background-size: 100% 100%;
@@ -45,11 +39,11 @@
     hr {margin:5px 0;}
     div, h2 {display: inline-block;}
     #qua, #dim {color: black;}
-    #face_total, #troy_ounce, #grand_total {padding: 0 10px;}
+    #face_total, #troy_ounce, #grand_total {padding: 0 5px;}
     #price, #prem {margin-top: 5px;}
     #price.warning, #prem.warning {color:red;}
     #prem-hd {float:left; margin-left:150px; font-size:24px; font-weight:bold;}
-    #premium         {background-color: white; border-radius:50%;font-size: 12px; margin:15px 0 0 40px; 
+    #premium         {background-color: white; border-radius:50%;font-size: 12px; margin:10px 5px 0 5px;
                       width:12px; height:12px; float: left; border:1px solid black; cursor:default;}
     #premium.toggled {background-color: #FFD700;}
     #gold.toggled    {background-color: #FFEA00;}
@@ -57,15 +51,17 @@
     #rnd,         #ken,         #prm         {background-color: #F0F0F0;}
     #nick {border-radius:50%; border:1px solid #888; cursor: default; padding:5px;}
     #nick.toggled {background-color: #F8C8DC;}
-    #lst {display:block; width:435px;}
+
+    /* Premium Table */
     #tbl {margin: auto;}
     #tbl th {text-align: center; min-width: 70px;}
     #tbl td {text-align: right; padding: 0 10px;}
     #tbl tr {background-color: transparent;}
+
     /* The Modal (background) */
     .modal {
       display: none; /* Hidden by default */
-      position: fixed; /* Stay in place */
+      position: absolute; /* Stay in place */
       z-index: 1; /* Sit on top */
       left: 0;
       top: 0;
@@ -80,25 +76,27 @@
     @media only screen and (max-width: 500px) {
       #hide {display:none;}
       #premium {width:16px; height:16px;}
-      /* body, input {font-size: 20px;} */
+      body, input {font-size: 20px;} 
     }
   /* https://www.w3schools.com/colors/colors_picker.asp */
   </style>
 </head>
-<body><div id="container">
-<table id=bag>
+<body><div id="container"><table id="bag">
 <tr><td colspan="7">
-    <div class="l" id="qrcode"><img src="qr_icon2.png"></div>
-    <h2>Silver Barter</h2>
-    <a id="help" href="help.html" target="_blank" class="r"><img src="help-icon2.png"></a>
+  <div class="l" id="qrcode"><img src="qr_icon2.png"></div>
+  <h2>Silver Barter</h2>
+  <a id="help" href="help.html" target="_blank" class="r"><img src="help-icon2.png"></a>
+</td></tr>
+<tr><td colspan="7">
   <div class="a">
     <a id="date" class="l" href="javascript:getSpot();">Get Spot Price</a>
     <a id="dollar" href="javascript:setSpot();">$28 Spot Price</a>
     <a id=fbp class="r" href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" target="_blank">Find Bullion Prices</a>
-  </div>
-</td></tr>
+  </div></td></tr>
 <tr><td colspan="7">
-  <div class="l">Gold:&nbsp;<input id="gold" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
+  <div class="l">
+    Gold:&nbsp;<input id="gold" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();">
+  </div>
   <a id=nick>5¢</a>
   <!--div class="l" id="qrcode">&nbsp;</div-->
 <tr><td colspan="7">
@@ -116,22 +114,29 @@
   <div class="l">Face:<div id="face_total"></div></div>
   <div class="l">ozt:<div id="troy_ounce">2.1</div></div>
   <div class="r">Total:<div id="grand_total"></div></div></td></tr>
-<tr><td colspan="7"><hr><input type=button value="Premiums" id="prm"><!--div id="prem-hd">Premiums</div--><br><hr>
-  <div class=l style="margin-left:0;text-align:left;"><div id=hide>$1 face</div>
-    <input type="radio" id="junk" name="type" value=".715" checked><label for="html">junk</label>
+<tr><td colspan="7">
+  <hr>
+  <input type=button value="Premiums" id="prm"><br>
+  <hr></td></tr>
+<tr><td colspan="7">
+  <div class="l">
+  $1<input type="radio" id="junk" name="type" value=".715" checked><label for="html">junk</label>
     <input type="radio" id="doll" name="type" value=".7734"><label for="html">dollar</label>
     <input type="radio" id="bull" name="type" value="1"><label for="html">BU</label>
     <input type="radio" id="kilo" name="type" value="32.15"><label for="html">K</label>
-    <input type="radio" id="mbox" name="type" value="500"><label for="html">mbox</label></div><br>
-  <div class="l"><label for="price">Price: </label>
+    <input type="radio" id="mbox" name="type" value="500"><label for="html">mbox</label></div></td></tr>
+<tr><td colspan="7">
+  <div class="l">
+    <label for="price">Price: </label>
     <input id="price" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value=""></div>
-    <div class="l" id="premium">&nbsp;</div>
-  <div class="r"><label for="prem">Prem: </label>
+  <div id="premium">&nbsp;</div>
+  <div class="r">
+    <label for="prem">Prem: </label>
     <input id="prem" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value=""></div></div>
-    <br>&nbsp;
-</td></tr>
+    <br>&nbsp;</td></tr>
+<tr><td colspan="7">
+  <div id="lst"></div></td></tr>
 </table></div>
-<div id="lst"></div>
 <div id="vp"></div>
 <div id="id01" class="modal">
   <img src="Silver Barter QR2.png">
