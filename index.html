@@ -16,16 +16,21 @@
     .a {font-size: 14px; margin-bottom: 14px; display: block;}
     #date,  #dollar, #fbp {text-decoration: none; color: #005999;} /* #551A8B; */
     #vp {display:block; font-size: 12px; color: gray;}
-    #container {display: block; max-width: 480px; width: calc(100% - 20px);}
+    #container {display: block; max-width: 480px; width: 100%;} /*calc(100% - 20px);}*/
     .warn {background-color: #e9dbf5;} /* #efe4f7; #E6E6FA;}*/
     #gold,
-    input[type="text"] {text-align: right;  border-radius: 6px; width: 90px; border-width: thin; padding-right: 8px;}
-/*    #price {width: 100px;}*/
+    input[type="text"] {text-align: right;  border-radius: 6px; width: 90px; border-width: thin; padding-right: 4px;}
+    #prem {width: 75px;}
+    #price {width: 95px;}
     input[type=button] {text-align: center; border-radius: 6px; margin: 3px; border-width: thin;}
-    button {background-color: #E6E6FA; font-size:24px; border-radius: 6px; border-width: 1px;}
-    button {min-width: 32px;}
-    td[colspan="7"] {text-align: center;}
-    tr:nth-child(3) td {text-align: right;}
+    #nick {border-radius:50%; border:1px solid #888; cursor: default; padding:5px; margin: 0 10px;}
+    #nick.toggled {background-color: #F8C8DC;}
+    .nick {width:32px; height:32px; display: inline-block; border: 1px solid #888; cursor: default;}
+    .nick,
+    button {background-color: #E6E6FA; font-size:24px; border-radius: 6px; border-width: 1px; min-width: 32px;}
+    td[colspan="7"]    {text-align: center;}
+    td:nth-child(2)    {min-width: 34px;}
+    td:nth-child(5)    {min-width: 62px;}
     td:nth-child(2),
     td:nth-child(5),
     td:nth-child(7)    {text-align: right; padding: 0 5px;}
@@ -45,14 +50,12 @@
     #price, #prem {margin-top: 5px;}
     #price.warning, #prem.warning {color:red;}
     #prem-hd {float:left; margin-left:150px; font-size:24px; font-weight:bold;}
-    #premium         {background-color: white; border-radius:50%;font-size: 12px; margin:10px 5px 0 5px;
-                      width:12px; height:12px; float: left; border:1px solid black; cursor:default;}
+    #premium         {background-color: white; border-radius:50%;font-size: 12px; margin:12px 2px 0 2px; /*float: left;*/
+                      width:12px; height:12px; border:1px solid black; cursor:default;}
     #premium.toggled {background-color: #FFD700;}
     #gold.toggled    {background-color: #FFEA00;}
     #rnd.toggled, #ken.toggled, #prm.toggled {background-color: #F8C8DC;}
     #rnd,         #ken,         #prm         {background-color: #F0F0F0;}
-    #nick {border-radius:50%; border:1px solid #888; cursor: default; padding:5px;}
-    #nick.toggled {background-color: #F8C8DC;}
 
     /* Premium Table */
     #tbl {margin: auto;}
@@ -77,7 +80,9 @@
 
     @media only screen and (max-width: 500px) {
       #hide {display:none;}
-      #premium {width:16px; height:16px;}
+      #premium {width: 16px; height: 16px; margin:10px 2px 0 2px;}
+      #prem    {width: 65px;}
+      #price   {width: 85px;}
       body, input {font-size: 20px;} 
     }
   /* https://www.w3schools.com/colors/colors_picker.asp */
@@ -96,14 +101,11 @@
     <a id=fbp class="r" href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" target="_blank">Find Bullion Prices</a>
   </div></td></tr>
 <tr><td colspan="7">
-  <div class="l">
-    Gold:&nbsp;<input id="gold" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();">
-  </div>
-  <a id=nick>5¢</a>
-  <!--div class="l" id="qrcode">&nbsp;</div-->
+  <div class="l">Gold:&nbsp;<input id="gold" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
+  <div class="r"><a class="nick">+</a><a id=nick>5¢</a><a class="nick toggled">-</a></div></td></tr>
 <tr><td colspan="7">
   <div class="l">Spot:&nbsp;<input id="spot" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
-  <div class="r">Amt:&nbsp;<input id="amt" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value="28.00"></div></td></tr>
+  <div class="r">Amt:&nbsp;<input id="amt" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value="100.00"></div></td></tr>
 <tr><td colspan="7"><input type=button value="Silver Rounds" id="rnd"></td></tr>
 <tr class=coin><td><button>+</button></td><td id="dolr" class="face">1</td><td><button>-</button></td><td>×</td><td id="dolr_price">10.60</td><td>=</td><td id="dolr_total">10.60</td></tr>  
 <tr><td colspan="7"><input type=button value="Half-Dollars" id="ken"></td></tr>
@@ -114,14 +116,14 @@
 <tr class=coin><td><button>+</button></td><td id="dime" class="face">1</td><td><button>-</button></td><td>×</td><td id="dime_price">2.12</td><td>=</td><td id="dime_total">2.12</td></tr>  
 <tr><td colspan="7">
   <div class="l">Face:<div id="face_total"></div></div>
-  <div class="l">ozt:<div id="troy_ounce">2.1</div></div>
+  <div>ozt:<div id="troy_ounce">2.1</div></div>
   <div class="r">Total:<div id="grand_total"></div></div></td></tr>
 <tr><td colspan="7">
   <hr>
   <input type=button value="Premiums" id="prm"><br>
   <hr></td></tr>
 <tr><td colspan="7">
-  <div class="l">
+  <div class="l" id="vis">
   $1<input type="radio" id="junk" name="type" value=".715" checked><label for="html">junk</label>
     <input type="radio" id="doll" name="type" value=".7734"><label for="html">dollar</label>
     <input type="radio" id="bull" name="type" value="1"><label for="html">BU</label>
@@ -151,14 +153,14 @@ let spot, amt, troy = .715, db = {
     "dime": {"fract": .10, "count": 0, "price": 0, "total": 0}, 
     "nick": {"fract": .05, "count": 0, "price": 0, "total": 0}  // no 90% nickels; a nickel is the LCD
   },
-  nickel_count = () => 28 * db.dolr.count
-                     + 10 * db.half.count
-                     +  5 * db.quar.count 
-                     +  2 * db.dime.count,
+  nickel_count = () => db.dolr.count * 20 / troy
+                     + db.half.count * 10
+                     + db.quar.count * 5 
+                     + db.dime.count * 2,
   premium = document.getElementById('premium'),
   silver = document.getElementById("spot"),
   grand = document.getElementById("grand_total"),
-  nick = document.getElementById("nick"),
+// nick = document.getElementById("nick"),
   gold = document.getElementById('gold'),
   face = document.getElementById("face_total"),
   prem = document.getElementById("prem"),
@@ -169,6 +171,7 @@ let spot, amt, troy = .715, db = {
   ken  = document.getElementById("ken"),
   prm  = document.getElementById("prm"),
   pct  = document.getElementById("pct"),
+  vis  = document.getElementById("vis"),
   today = () => new Date().toISOString().split('T')[0],
   myHeaders = new Headers(),
   requestOptions = {
@@ -244,8 +247,9 @@ pric.onchange = function(event){
     if(pct < 0 || pct > 200)
       pric.className = 'warning';
   }
-  prem.value = pct.toFixed(1) +"%";
-  pric.value = parseFloat(price).toFixed(2);
+// prem.value = pct.toFixed(1) +"%";
+  prem.value = pct >= 100 ? pct.toFixed(0) +"%": pct.toFixed(1) +"%";
+  pric.value = parseFloat(price) >= 10000 ? parseFloat(price).toFixed(0) : parseFloat(price).toFixed(2);
   pric.blur(); // event.target
   prem.blur(); 
   // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
@@ -254,17 +258,21 @@ pric.onchange = function(event){
 
 prem.onchange = function(event){
   let factor = document.querySelector('input[name="type"]:checked').value,
-    pct = prem.value.replace(/%/,'');
+    pct = prem.value.replace(/%/,''), p;
   clrPrem();
   if(pct.match(/^[0 ]?$/)){
     return false;
   }
   if(premium.className == "toggled"){
-    pric.value = parseFloat(gold.value*(1+ pct/100)).toFixed(2);
+    let p = parseFloat(gold.value*(1+ pct/100));
+    pric.value = p >= 10000 ? p.toFixed(0) : p.toFixed(2);
   }else{
-    pric.value = parseFloat(factor*silver.value*(1+ pct/100)).toFixed(2);
+    let p = parseFloat(factor*silver.value*(1+ pct/100));
+    pric.value = p >= 10000 ? p.toFixed(0) : p.toFixed(2);
+  // pric.value = parseFloat(factor*silver.value*(1+ pct/100)).toFixed(2);
   }
-  prem.value = parseFloat(pct).toFixed(1) +"%";
+
+  prem.value = parseFloat(pct) >= 100 ? parseFloat(pct).toFixed(0) +"%": parseFloat(pct).toFixed(1) +"%";
   prem.blur(); // event.target
   // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
   list_prems(parseFloat(factor));
@@ -273,13 +281,13 @@ prem.onchange = function(event){
 function list_prems(factor){
   let tbl='';
   if(premium.className == "toggled"){
-    for(let i=0;i<13;i++){
-      j = 4.5 + i*.5;
+    for(let i=0;i<20;i++){
+      j = 2.5 + i*.5;
       tbl+=`<tr><td>${(gold.value*(1+j/100)).toFixed(2)}</td><td>${(gold.value*(j/100)).toFixed(2)}</td><td>${j.toFixed(1)}%</td></tr>\n`;
     }
   }else{
-    for(let i=0;i<26;i++){
-      j = 10 + i*2;
+    for(let i=0;i<28;i++){
+      j = 6 + i*2;
       tbl+=`<tr><td>${(factor*silver.value*(1+ j/100)).toFixed(2)}</td><td>${(factor*silver.value*(j/100)).toFixed(2)}</td><td>${j.toFixed(1)}%</td></tr>\n`;
     }
   }
@@ -318,14 +326,18 @@ function render(){ console.trace();
   spot = parseFloat(silver.value);
   amt  = parseFloat(buy.value);
 
-  db.nick.count  = Math.floor(amt / (spot * troy * .05));
+ // db.nick.count  = Math.floor(amt / (spot * troy * .05));
 
   if(rnd.className != 'toggled'){
-    db.dolr.count  = Math.floor(db.nick.count / 28); // 1.40/.05
-    db.nick.count -= Math.floor(db.dolr.count * 28);
+ // db.dolr.count  = Math.floor(db.nick.count / 28); // 1.40/.05
+    db.dolr.count  = Math.floor((amt + .001) / spot);
+ // db.nick.count -= Math.floor(db.dolr.count * 28);
   }else{
     db.dolr.count  = 0;
   }
+
+  db.nick.count  = Math.floor((amt - db.dolr.count * spot) / (spot * troy * .05));
+
   if(db.dolr.count > 0 && db.nick.count < 4 && db.nick.count % 2 != 0){
      db.dolr.count -= 1;
      db.nick.count += 28;
@@ -352,26 +364,28 @@ function render(){ console.trace();
 let e = document.querySelectorAll("button");
 for(let i = 0; i < e.length; i++){
   e[i].addEventListener("click", function(event){ 
-    fn(event.target);
-    let e = document.getElementsByClassName("face"), n = 0;
-    for(let i = 0; i < e.length; i++){
-      n += parseFloat(e[i].textContent * db[e[i].id]["fract"]);
-    } 
-    face.innerHTML = (n - db.dolr.count * (db.dolr.fract -1)).toFixed(2);     
-    ozt.innerHTML = (n * troy).toFixed(2);  
-    buy.value = (nickel_count() * spot * troy * .05 + .01).toFixed(2);
+    if(fn(event.target)){
+      let e = document.getElementsByClassName("face"), n = 0;
+      for(let i = 0; i < e.length; i++){
+        n += parseFloat(e[i].textContent * db[e[i].id]["fract"]);
+      } 
+      face.innerHTML = (n - db.dolr.count * (db.dolr.fract -1)).toFixed(2);     
+      ozt.innerHTML = (n * troy).toFixed(2);  
+      buy.value = (nickel_count() * spot * troy * .05 + .01).toFixed(2);
+    }
   });
 };
 
 function fn(e){
   console.log(e);
   let td, inc;
-  if(e.tagName == "BUTTON"){
+  if(e.tagName == "BUTTON"){ // called from + or - button
     td  = e.parentNode.parentNode.querySelectorAll('td'),
     inc = e.textContent == '+' ? 1 : -1;
-    if(td[1].id == 'dolr' && rnd.classList.value == 'toggled'
-    || td[1].id == 'half' && ken.classList.value == 'toggled') return;
-  }else{
+    // if + or - clicked and disabled then return false
+    if(td[1].id == 'dolr' && rnd.classList.value == 'toggled' 
+    || td[1].id == 'half' && ken.classList.value == 'toggled') return false;
+  }else{ // called from last render() stmt
     td  = e.querySelectorAll('td'),
     inc = 0;
   }
@@ -390,14 +404,15 @@ function fn(e){
   face.innerHTML = (n - db.dolr.count * (db.dolr.fract - 1)).toFixed(2); // adjust for rounds
 //face.innerHTML = (n).toFixed(2);
   ozt.innerHTML = (n * troy).toFixed(2);
-  offsetCenter();
+  // offsetCenter();
+  return true;
 }
 
-function offsetCenter(){
-  let gap = ozt.parentElement.parentElement.offsetWidth - (face.parentElement.offsetWidth + ozt.parentElement.offsetWidth + grand.parentElement.offsetWidth);
-  ozt.parentElement.style.marginLeft = `${Math.floor(gap/2)}px`;
-  // console.log(gap);
-}
+// function offsetCenter(){
+//   let gap = ozt.parentElement.parentElement.offsetWidth - (face.parentElement.offsetWidth + ozt.parentElement.offsetWidth + grand.parentElement.offsetWidth);
+//   ozt.parentElement.style.marginLeft = `${Math.floor(gap/2)}px`;
+//   // console.log(gap);
+// }
 
 function clrPrem(flag){
     pric.className = '';
@@ -422,6 +437,7 @@ for(let i = 0; i < e.length; i++){
 premium.addEventListener('click', function (event) {
   event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
   gold.className         = 'toggled' == gold.className         ? '' : 'toggled';
+  vis.style.visibility   = gold.className == 'toggled' ?   'hidden' : 'visible';
   clrPrem();
 });
 
@@ -434,7 +450,7 @@ rnd.addEventListener('click', function (event) {
     event.target.className = 'toggled';
     localStorage.setItem(event.target.value, 'toggled');
   }
-  buy.value = (nickel_count() * spot * troy * .05 + .01).toFixed(2);
+  // buy.value = (nickel_count() * spot * troy * .05 + .01).toFixed(2);
   render();
 });
 
@@ -447,7 +463,7 @@ ken.addEventListener('click', function (event) {
     event.target.className = 'toggled';
     localStorage.setItem(event.target.value, 'toggled');
   }
-  buy.value = (nickel_count() * spot * troy * .05 + .01).toFixed(2);
+  // buy.value = (nickel_count() * spot * troy * .05 + .01).toFixed(2);
   render();
 });
 
@@ -462,17 +478,30 @@ function setSpot(){
   render();
 }
 
-nick.addEventListener('click', function (event) {
-  if(nick.className == 'toggled'){
-     nick.className = '';
-     buy.value = ((nickel_count() - 1) * spot * troy * .05 + .01).toFixed(2);
-  }else{
-     nick.className = 'toggled';
-     buy.value = ((nickel_count() + 1) * spot * troy * .05 + .01).toFixed(2);
-  }
-  nick.blur();
-  render();
+let els = document.getElementsByClassName("nick");
+[].forEach.call(els, function (nick) {
+  nick.addEventListener('click', function (event) {
+    if(event.target.classList.contains('toggled')){
+       buy.value = ((nickel_count() - 1) * spot * troy * .05 + .01).toFixed(2);
+    }else{
+       buy.value = ((nickel_count() + 1) * spot * troy * .05 + .01).toFixed(2);
+    }
+    event.target.blur();
+    render();
+  });
 });
+
+// nick.addEventListener('click', function (event) {
+//   if(nick.className == 'toggled'){
+//      nick.className = '';
+//      buy.value = ((nickel_count() - 1) * spot * troy * .05 + .01).toFixed(2);
+//   }else{
+//      nick.className = 'toggled';
+//      buy.value = ((nickel_count() + 1) * spot * troy * .05 + .01).toFixed(2);
+//   }
+//   nick.blur();
+//   render();
+// });
 document.getElementById("vp").innerHTML = window.innerWidth;
 
 let modal = document.getElementById('id01');
@@ -498,5 +527,6 @@ window.onclick = function(event) {
   Local Barter - 192.168.0.10:9000 - ipconfig /all
 */
 </script>
+<!-- premium.addEventListener -->
 </body>
 </html>
