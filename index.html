@@ -23,11 +23,28 @@
     #prem {width: 75px;}
     #price {width: 95px;}
     input[type=button] {text-align: center; border-radius: 6px; margin: 3px; border-width: thin;}
-    #nick {border-radius:50%; border:1px solid #888; cursor: default; padding:5px; margin: 0 10px;}
-    #nick.toggled {background-color: #F8C8DC;}
-    .nick {width:32px; height:32px; display: inline-block; border: 1px solid #888; cursor: default;}
+    #s {font-size:18px;}
     .nick,
-    button {background-color: #E6E6FA; font-size:24px; border-radius: 6px; border-width: 1px; min-width: 32px;}
+    button {background-color: #E6E6FA; font-size:24px; border-radius: 6px; border-width: 1px;}
+    button {min-width: 32px;}
+    .nick {
+      width:30px; 
+      height:30px; 
+      display: inline-block; 
+      border: 1px solid #888; 
+      cursor: default;}
+    #nick {
+      border-radius: 50%; 
+      padding: 1px;
+      border:1px solid #888; 
+      cursor: default; 
+      margin: 0 10px; 
+      display: inline-block; 
+      width:30px; 
+      height:30px;
+      /*transform: translateY(-2px); display: inline-block; padding:5px; */
+    }
+    #nick.toggled {background-color: #F8C8DC;}
     td[colspan="7"]    {text-align: center;}
     td:nth-child(2)    {min-width: 34px;}
     td:nth-child(5)    {min-width: 62px;}
@@ -84,7 +101,7 @@
       #prem    {width: 65px;}
       #price   {width: 85px;}
       body, input {font-size: 20px;} 
-      .nick {width:28px; height:28px;}
+      .nick, #nick {width:26px; height:26px; font-size: 20px;}
     }
   /* https://www.w3schools.com/colors/colors_picker.asp */
   </style>
@@ -103,7 +120,7 @@
   </div></td></tr>
 <tr><td colspan="7">
   <div class="l">Gold:&nbsp;<input id="gold" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
-  <div class="r"><a class="nick">+</a><a id=nick>5¢</a><a class="nick toggled">-</a></div></td></tr>
+  <div class="r"><a class="nick">+</a><a id=nick style="">5¢</a><a class="nick toggled">-</a></div></td></tr>
 <tr><td colspan="7">
   <div class="l">Spot:&nbsp;<input id="spot" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
   <div class="r">Amt:&nbsp;<input id="amt" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value="100.00"></div></td></tr>
