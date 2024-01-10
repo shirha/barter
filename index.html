@@ -21,7 +21,7 @@
     #gold,
     input[type="text"] {text-align: right;  border-radius: 6px; width: 90px; border-width: thin; padding-right: 4px;}
     #prem {width: 75px;}
-    #price {width: 95px;}
+    #price {width: 105px;}
     input[type=button] {text-align: center; border-radius: 6px; margin: 3px; border-width: thin;}
     #s {font-size:18px;}
     .nick,
@@ -93,7 +93,7 @@
       #hide {display:none;}
       #premium {width: 16px; height: 16px; margin:10px 2px 0 2px;}
       #prem    {width: 65px;}
-      #price   {width: 85px;}
+      #price   {width: 95px;}
       body, input {font-size: 20px;} 
       .nick, #nick {width:26px; height:26px; font-size: 20px;}
     }
@@ -261,7 +261,8 @@ pric.onchange = function(event){
   }
 // prem.value = pct.toFixed(1) +"%";
   prem.value = pct >= 100 ? pct.toFixed(0) +"%": pct.toFixed(1) +"%";
-  pric.value = parseFloat(price) >= 10000 ? parseFloat(price).toFixed(0) : parseFloat(price).toFixed(2);
+  // pric.value = parseFloat(price) >= 10000 ? parseFloat(price).toFixed(0) : parseFloat(price).toFixed(2);
+  pric.value = parseFloat(price).toFixed(2);
   pric.blur(); // event.target
   prem.blur(); 
   // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
@@ -279,9 +280,9 @@ prem.onchange = function(event){
     p = parseFloat(gold.value*(1+ pct/100));
     pric.value = p >= 10000 ? p.toFixed(0) : p.toFixed(2);
   }else{
-  // pric.value = parseFloat(factor*silver.value*(1+ pct/100)).toFixed(2);
-    p = parseFloat(factor*silver.value*(1+ pct/100));
-    pric.value = p >= 10000 ? p.toFixed(0) : p.toFixed(2);
+    pric.value = parseFloat(factor*silver.value*(1+ pct/100)).toFixed(2);
+    // p = parseFloat(factor*silver.value*(1+ pct/100));
+    // pric.value = p >= 10000 ? p.toFixed(0) : p.toFixed(2);
   }
 
   prem.value = parseFloat(pct) >= 100 ? parseFloat(pct).toFixed(0) +"%": parseFloat(pct).toFixed(1) +"%";
@@ -340,7 +341,7 @@ function render(sign){ console.trace();
   if((sign > 0 && (nickel_count() == 0 || nickel_count() == 2)) ||
      (sign < 0 && (nickel_count() == 4 || nickel_count() == 2))){ nickel *= 2 }
   if( sign < 0 &&  nickel_count() == 0                         ){ nickel  = 0 }
-    
+
   amt  = parseFloat(buy.value) + nickel;
   spot = parseFloat(silver.value);
 
