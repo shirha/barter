@@ -227,13 +227,13 @@ async function getSpot(){
   data = await response.json();
   console.log(data);
   if('price' in data) 
-    api.gold = data["price"]; 
+    api.gold = data["ask"]; 
   response = await fetch(
     "https://www.goldapi.io/api/XAG/USD", requestOptions);
   data = await response.json();
   console.log(data);
   if('price' in data){
-    api.silver = data["price"]; 
+    api.silver = data["ask"]; 
     api.date = today();
     localStorage.setItem("goldapi", JSON.stringify(api));
     gold.value = parseFloat(api.gold).toFixed(2);
@@ -276,12 +276,12 @@ prem.onchange = function(event){
     return false;
   }
   if(premium.className == "toggled"){
-    let p = parseFloat(gold.value*(1+ pct/100));
+    p = parseFloat(gold.value*(1+ pct/100));
     pric.value = p >= 10000 ? p.toFixed(0) : p.toFixed(2);
   }else{
-    let p = parseFloat(factor*silver.value*(1+ pct/100));
-    pric.value = p >= 10000 ? p.toFixed(0) : p.toFixed(2);
   // pric.value = parseFloat(factor*silver.value*(1+ pct/100)).toFixed(2);
+    p = parseFloat(factor*silver.value*(1+ pct/100));
+    pric.value = p >= 10000 ? p.toFixed(0) : p.toFixed(2);
   }
 
   prem.value = parseFloat(pct) >= 100 ? parseFloat(pct).toFixed(0) +"%": parseFloat(pct).toFixed(1) +"%";
@@ -336,21 +336,21 @@ silver.onchange = function(event){
 
 function render(sign){ console.trace();
   let nickel = sign !== undefined ? sign * db.dime.price * .5 : 0;
-  spot = parseFloat(silver.value);
-  amt  = parseFloat(buy.value) + nickel;
 
- // db.nick.count  = Math.floor(amt / (spot * troy * .05));
+  if((sign > 0 && (nickel_count() == 0 || nickel_count() == 2)) ||
+     (sign < 0 && (nickel_count() == 4 || nickel_count() == 2))){ nickel *= 2 }
+  if( sign < 0 &&  nickel_count() == 0                         ){ nickel  = 0 }
+    
+  amt  = parseFloat(buy.value) + nickel;
+  spot = parseFloat(silver.value);
 
   if(rnd.className != 'toggled'){
- // db.dolr.count  = Math.floor(db.nick.count / 28); // 1.40/.05
     db.dolr.count  = Math.floor((amt + .005) / spot);
- // db.nick.count -= Math.floor(db.dolr.count * 28);
   }else{
     db.dolr.count  = 0;
   }
 
   db.nick.count  = Math.floor((amt - db.dolr.count * spot) / (spot * troy * .05));
-  // db.nick.count += sign !== undefined ? sign : 0;
 
   if(db.dolr.count > 0 && db.nick.count < 4 && db.nick.count % 2 != 0){
      db.dolr.count -= 1;
@@ -373,7 +373,11 @@ function render(sign){ console.trace();
   }
 
   document.querySelectorAll('.coin').forEach(e => fn(e));
-  return false;
+
+  grand.innerHTML  = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
+  let n = amt / (spot * troy);
+  face.innerHTML = (n - db.dolr.count * (db.dolr.fract - 1)).toFixed(2); // adjust for rounds
+  ozt.innerHTML = (n * troy).toFixed(2);
 };
 
 let e = document.querySelectorAll("button");
@@ -385,12 +389,12 @@ for(let i = 0; i < e.length; i++){
       //   n += parseFloat(e[i].textContent * db[e[i].id]["fract"]);
       //   console.log(`${e[i].textContent} * ${db[e[i].id]["fract"]}`);
       // } 
+      grand.innerHTML  = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
       amt = (nickel_count() * spot * troy * .05 + .005);
-      let n = amt / (spot * troy);
       buy.value = amt.toFixed(2);
+      let n = amt / (spot * troy);
       face.innerHTML = (n - db.dolr.count * (db.dolr.fract -1)).toFixed(2);     
       ozt.innerHTML = (n * troy).toFixed(2);  
-      console.log(i, buy.value);
     }
   });
 };
@@ -402,8 +406,8 @@ function fn(e){
     td  = e.parentNode.parentNode.querySelectorAll('td'),
     inc = e.textContent == '+' ? 1 : -1;
     // if + or - clicked and disabled then return false
-    if(td[1].id == 'dolr' && rnd.classList.value == 'toggled' 
-    || td[1].id == 'half' && ken.classList.value == 'toggled') return false;
+    if(td[1].id == 'dolr' && rnd.classList.value == 'toggled' ||
+       td[1].id == 'half' && ken.classList.value == 'toggled') return false;
   }else{ // called from last render() stmt
     td  = e.querySelectorAll('td'),
     inc = 0;
@@ -416,13 +420,13 @@ function fn(e){
   td[1].innerHTML  = db[key].count;
   td[4].innerHTML  = db[key].price.toFixed(3);
   td[6].innerHTML  = db[key].total.toFixed(2);
-  console.log(`key= ${key}`,db[key]);
+  console.log(`key= ${key}:`,db[key]);
 
-  grand.innerHTML  = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
-  let n = amt / (spot * troy);
-  // let n = parseFloat(buy.value) / (spot * troy);
-  face.innerHTML = (n - db.dolr.count * (db.dolr.fract - 1)).toFixed(2); // adjust for rounds
-  ozt.innerHTML = (n * troy).toFixed(2);
+  // grand.innerHTML  = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
+  // let n = amt / (spot * troy);
+  // // let n = parseFloat(buy.value) / (spot * troy);
+  // face.innerHTML = (n - db.dolr.count * (db.dolr.fract - 1)).toFixed(2); // adjust for rounds
+  // ozt.innerHTML = (n * troy).toFixed(2);
   return true;
 }
 
@@ -440,13 +444,14 @@ let els = document.getElementsByClassName("nick");
     // let amt   = parseFloat(buy.value);
     // buy.value = ((nickel_count() + sign) * spot * troy * .05 + .01).toFixed(2);
 
-    event.target.blur();
     render(sign);
-    grand.innerHTML  = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
-    let n = amt / (spot * troy);
-    face.innerHTML = (n - db.dolr.count * (db.dolr.fract - 1)).toFixed(2); // adjust for rounds
-    ozt.innerHTML = (n * troy).toFixed(2);
-    buy.value = (nickel_count() * spot * troy * .05 + .005).toFixed(2);
+    // grand.innerHTML  = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
+    // let n = amt / (spot * troy);
+    // face.innerHTML = (n - db.dolr.count * (db.dolr.fract - 1)).toFixed(2); // adjust for rounds
+    // ozt.innerHTML = (n * troy).toFixed(2);
+    amt = (nickel_count() * spot * troy * .05 + .005);
+    buy.value = amt.toFixed(2);
+    event.target.blur();
   });
 });
 
@@ -502,7 +507,7 @@ ken.addEventListener('click', function (event) {
 prm.addEventListener('click', function (event) {
   event.target.className = event.target.className == 'toggled' ? '' : 'toggled';
   lst.style.display      = event.target.className == 'toggled' ? 'none' : 'block';
-  render();
+  // render();
 });
 
 function setSpot(){
