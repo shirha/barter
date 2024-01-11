@@ -375,13 +375,14 @@ function render(sign){ // console.trace();
   let f = amt / (spot * troy);
   face.innerHTML = (f - db.dolr.count * (db.dolr.fract - 1)).toFixed(2); // adjust for rounds
   ozt.innerHTML = (amt / spot).toFixed(2);
-  console.log(`amt: ${amt}, face: ${n.toFixed(2)}, nickel_count(): ${nickel_count()}`, db);
+  console.log(`amt: ${amt}, face: ${f.toFixed(2)}, nickel_count(): ${nickel_count()}`, db);
 };
 
 let e = document.querySelectorAll("button");
 for(let i = 0; i < e.length; i++){
   e[i].addEventListener("click", function(event){ 
     if(fn(event.target)){
+
       grand.innerHTML  = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
       amt = nickel_count() * spot * troy * db.nick.fract + .005;
       buy.value = amt.toFixed(2);
