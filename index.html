@@ -243,7 +243,7 @@ async function getSpot(){
 
 pric.onchange = function(event){
   let factor = document.querySelector('input[name="type"]:checked').value,
-    pct, price = pric.value;
+    pct, price = pric.value.replace(/[^\d.]/g,'');
   clrPrem();
   if(price.match(/^[0 ]?$/)){
     return false;
@@ -267,11 +267,12 @@ pric.onchange = function(event){
 
 prem.onchange = function(event){
   let factor = document.querySelector('input[name="type"]:checked').value,
-    pct = prem.value.replace(/%/,''), p;
+    pct = prem.value.replace(/[^\d.]/g,''), p;
   clrPrem();
   if(pct.match(/^[0 ]?$/)){
     return false;
   }
+  pct = parseFloat(pct);
   if(premium.className == "toggled"){
     p = parseFloat(gold.value*(1+ pct/100));
     pric.value = p >= 10000 ? p.toFixed(0) : p.toFixed(2);
@@ -279,7 +280,7 @@ prem.onchange = function(event){
     pric.value = parseFloat(factor*silver.value*(1+ pct/100)).toFixed(2);
   }
 
-  prem.value = parseFloat(pct) >= 100 ? parseFloat(pct).toFixed(0) +"%": parseFloat(pct).toFixed(1) +"%";
+  prem.value = pct >= 100 ? pct.toFixed(0) +"%": pct.toFixed(1) +"%";
   prem.blur(); // event.target
   // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
   list_prems(parseFloat(factor));
@@ -302,13 +303,13 @@ function list_prems(factor){
 }
 
 buy.onchange = function(event){
-  event.target.value = parseFloat(event.target.value).toFixed(2);
+  event.target.value = parseFloat(event.target.value.replace(/[^\d.]/g,'')).toFixed(2);
   event.target.blur();
   render();
 };
 
 gold.onchange = function(event){
-  gold.value = api.gold = parseFloat(event.target.value).toFixed(2);
+  gold.value = api.gold = parseFloat(event.target.value.replace(/[^\d.]/g,'')).toFixed(2);
   localStorage.setItem("goldapi", JSON.stringify(api));
   event.target.blur();
 };
@@ -322,7 +323,7 @@ silver.onchange = function(event){
       .catch(error => console.log('error', error));
     event.target.value = api.silver;
   }else{
-    event.target.value = api.silver = parseFloat(event.target.value).toFixed(3);
+    event.target.value = api.silver = parseFloat(event.target.value.replace(/[^\d.]/g,'')).toFixed(3);
     localStorage.setItem("goldapi", JSON.stringify(api));
     render();
   }
@@ -345,7 +346,9 @@ function render(sign){ // console.trace();
     db.dolr.count  = 0;
   }
 
-  db.nick.count  = Math.floor((amt - db.dolr.count * spot) / (spot * troy * .05));
+  db.nick.count  = Math.max(0, Math.floor((amt - db.dolr.count * spot) / (spot * troy * db.nick.fract)));
+  // if(db.nick.count < 0){alert('db.nick.count < 0')}
+  // console.log(db.nick.count);
 
   if(db.dolr.count > 0 && db.nick.count < 4 && db.nick.count % 2 != 0){
      db.dolr.count -= 1;
