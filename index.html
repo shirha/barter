@@ -372,8 +372,8 @@ function render(sign){ // console.trace();
 
   grand.innerHTML = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
   amt = nickel_count() * spot * troy * db.nick.fract + .005;
-  let n = amt / (spot * troy);
-  face.innerHTML = (n - db.dolr.count * (db.dolr.fract - 1)).toFixed(2); // adjust for rounds
+  let f = amt / (spot * troy);
+  face.innerHTML = (f - db.dolr.count * (db.dolr.fract - 1)).toFixed(2); // adjust for rounds
   ozt.innerHTML = (amt / spot).toFixed(2);
   console.log(`amt: ${amt}, face: ${n.toFixed(2)}, nickel_count(): ${nickel_count()}`, db);
 };
@@ -385,8 +385,8 @@ for(let i = 0; i < e.length; i++){
       grand.innerHTML  = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
       amt = nickel_count() * spot * troy * db.nick.fract + .005;
       buy.value = amt.toFixed(2);
-      let n = amt / (spot * troy);
-      face.innerHTML = (n - db.dolr.count * (db.dolr.fract -1)).toFixed(2);     
+      let f = amt / (spot * troy);
+      face.innerHTML = (f - db.dolr.count * (db.dolr.fract -1)).toFixed(2);     
       ozt.innerHTML = (amt / spot).toFixed(2);
     }
   });
