@@ -243,7 +243,7 @@ async function getSpot(){
 
 pric.onchange = function(event){
   let factor = document.querySelector('input[name="type"]:checked').value,
-    pct, price = pric.value.replace(/[^\d.]/g,'');
+    price = pric.value.replace(/[^\d.]/g,''), pct;
   clrPrem();
   if(price.match(/^[0 ]?$/)){
     return false;
@@ -347,8 +347,6 @@ function render(sign){ // console.trace();
   }
 
   db.nick.count  = Math.max(0, Math.floor((amt - db.dolr.count * spot) / (spot * troy * db.nick.fract)));
-  // if(db.nick.count < 0){alert('db.nick.count < 0')}
-  // console.log(db.nick.count);
 
   if(db.dolr.count > 0 && db.nick.count < 4 && db.nick.count % 2 != 0){
      db.dolr.count -= 1;
@@ -376,8 +374,8 @@ function render(sign){ // console.trace();
   amt = nickel_count() * spot * troy * db.nick.fract + .005;
   let n = amt / (spot * troy);
   face.innerHTML = (n - db.dolr.count * (db.dolr.fract - 1)).toFixed(2); // adjust for rounds
-  ozt.innerHTML = (n * troy).toFixed(2);
-  console.log(`amt: ${amt}, nickel_count(): ${nickel_count()}`, db);
+  ozt.innerHTML = (amt / spot).toFixed(2);
+  console.log(`amt: ${amt}, face: ${n.toFixed(2)}, nickel_count(): ${nickel_count()}`, db);
 };
 
 let e = document.querySelectorAll("button");
@@ -389,7 +387,7 @@ for(let i = 0; i < e.length; i++){
       buy.value = amt.toFixed(2);
       let n = amt / (spot * troy);
       face.innerHTML = (n - db.dolr.count * (db.dolr.fract -1)).toFixed(2);     
-      ozt.innerHTML = (n * troy).toFixed(2);  
+      ozt.innerHTML = (amt / spot).toFixed(2);
     }
   });
 };
