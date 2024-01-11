@@ -378,9 +378,8 @@ function render(sign){ // console.trace();
   console.log(`amt: ${amt}, face: ${f.toFixed(2)}, nickel_count(): ${nickel_count()}`, db);
 };
 
-let e = document.querySelectorAll("button");
-for(let i = 0; i < e.length; i++){
-  e[i].addEventListener("click", function(event){ 
+[...document.querySelectorAll("button")].forEach(b => {
+  b.addEventListener("click", function(event){ 
     if(fn(event.target)){
 
       grand.innerHTML  = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
@@ -391,7 +390,7 @@ for(let i = 0; i < e.length; i++){
       ozt.innerHTML = (amt / spot).toFixed(2);
     }
   });
-};
+});
 
 function fn(e){
   // console.log(e);
@@ -418,14 +417,12 @@ function fn(e){
   return true;
 }
 
-let els = document.getElementsByClassName("nick");
-[].forEach.call(els, function (nick) {
+[...document.getElementsByClassName("nick")].forEach(nick => {
   nick.addEventListener('click', function (event) {
     let sign = event.target.classList.contains('toggled') ? -1 : 1;
     render(sign);
     amt = nickel_count() * spot * troy * db.nick.fract + .005;
     buy.value = amt.toFixed(2);
-    event.target.blur();
   });
 });
 
@@ -442,12 +439,11 @@ function clrPrem(flag){
 }
 clrPrem();
 
-e = document.querySelectorAll('input[name="type"]');
-for(let i = 0; i < e.length; i++){
-  e[i].addEventListener("click", function(event){ 
+[...document.querySelectorAll('input[name="type"]')].forEach(e => {
+  e.addEventListener("click", function(event){ 
     clrPrem(1);
   });
-}
+});
 
 premium.addEventListener('click', function (event) {
   event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
@@ -510,6 +506,11 @@ window.onclick = function(event) {
   https://www.cointalk.com/threads/715-or-7234-to-calculate-90.290085/
   https://www.coinflation.com/coins/1932-1964-Silver-Washington-Quarter-Value.html
   https://me-qr.com/
+  https://dev.to/dailydevtips1/javascript-loop-queryselectorall-results-j6
+  "D:\Offline\Apps\github pages\expedition\index.html"
+    [...document.querySelectorAll('.p')]
+      .filter(e => !/POI:/.test(e.textContent))
+      .forEach(e => e.style.display = "none");
   Local Barter - 192.168.0.10:9000 - ipconfig /all
 */
 </script>
