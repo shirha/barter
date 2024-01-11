@@ -45,7 +45,7 @@
     td:nth-child(5),
     td:nth-child(7) {text-align: right; padding: 0 5px;}
     #bag {
-      background-image: url("cover.jpg");
+      background-image: url("cover2.jpg");
       background-size: contain;
       background-repeat: no-repeat;
       background-color: rgba(255,255,255,0.6);
@@ -378,7 +378,7 @@ function render(sign){ // console.trace();
   console.log(`amt: ${amt}, face: ${f.toFixed(2)}, nickel_count(): ${nickel_count()}`, db);
 };
 
-[...document.querySelectorAll("button")].forEach(b => {
+document.querySelectorAll("button").forEach(b => {
   b.addEventListener("click", function(event){ 
     if(fn(event.target)){
 
@@ -417,8 +417,8 @@ function fn(e){
   return true;
 }
 
-[...document.getElementsByClassName("nick")].forEach(nick => {
-  nick.addEventListener('click', function (event) {
+[...document.getElementsByClassName("nick")].forEach(e => {
+  e.addEventListener('click', function (event) {
     let sign = event.target.classList.contains('toggled') ? -1 : 1;
     render(sign);
     amt = nickel_count() * spot * troy * db.nick.fract + .005;
@@ -439,7 +439,7 @@ function clrPrem(flag){
 }
 clrPrem();
 
-[...document.querySelectorAll('input[name="type"]')].forEach(e => {
+document.querySelectorAll('input[name="type"]').forEach(e => {
   e.addEventListener("click", function(event){ 
     clrPrem(1);
   });
