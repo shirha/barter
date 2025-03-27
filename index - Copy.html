@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.json">
+  <link rel="shortcut icon" type="image/png" href="favicon-512.png">
+  <title>Silver Barter</title>
+  <style> 
+    body, input {font-size: 24px; font-family: Helvetica;}
+    #help img, #qrcode img {margin-top:10px; height: 20px;}
+    h2 {margin:0 0 8px 0;}
+    .l {float: left;}
+    .r {float: right;}
+    .a {font-size: 14px; margin-bottom: 14px; display: block;}
+    #date,  #dollar, #fbp {text-decoration: none; color: #005999;} /* #551A8B; */
+    #vp {display:block; font-size: 12px; color: gray;}
+    #container {display: block; max-width: 480px; width: 100%;} /*calc(100% - 20px);}*/
+    .warn {background-color: #e9dbf5;} /* #efe4f7; #E6E6FA;}*/
+    #gold,
+    input[type="text"] {text-align: right;  border-radius: 6px; width: 90px; border-width: thin; padding-right: 4px;}
+    input[type=button] {text-align: center; border-radius: 6px; margin: 3px; border-width: thin;}
+    #s {font-size:18px;}
+    .nick,
+    button {background-color: #E6E6FA; font-size:24px; border-radius: 6px; border-width: 1px;}
+    button {min-width: 32px;}
+    .nick, #nick {
+      border: 1px solid #888; 
+      cursor: default;
+      display: inline-block; 
+      height:30px; 
+      width:30px;
+    }
+    #nick {
+      border-radius: 50%; 
+      padding: 1px;
+      margin: 0 10px; 
+    }
+    #nick.toggled {background-color: #F8C8DC;}
+    td[colspan="7"] {text-align: center;}
+    td:nth-child(2) {min-width: 34px;}
+    td:nth-child(5) {min-width: 62px;}
+    td:nth-child(2),
+    td:nth-child(5),
+    td:nth-child(7) {text-align: right; padding: 0 5px;}
+    #bag {
+      background-image: url("cover2.jpg");
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-color: rgba(255,255,255,0.6);
+      background-blend-mode: lighten;
+      margin: auto;
+    }
+    hr {margin:5px 0;}
+    div, h2 {display: inline-block;}
+    #qua, #dim {color: black;}
+    #face_total, #troy_ounce, #grand_total {padding: 0 5px;}
+    #price, #prem {margin-top: 5px;}
+    #prem {width: 75px;}
+    #price {width: 105px;}
+    #price.warning, #prem.warning {color:red;}
+    #prem-hd {float:left; margin-left:150px; font-size:24px; font-weight: bold;}
+    #premium {background-color: white; border-radius:50%; border:1px solid black;
+              font-size: 12px; width:12px; height:12px; margin:12px 2px 0 2px; cursor:default;}
+    #premium.toggled {background-color: #FFD700;}
+    #gold.toggled    {background-color: #FFEA00;}
+    #rnd.toggled, #ken.toggled, #prm.toggled {background-color: #F8C8DC;}
+    #rnd,         #ken,         #prm         {background-color: #F0F0F0;}
+
+    /* Premium Table */
+    #tbl {margin: auto;}
+    #tbl th {text-align: center; min-width: 70px;}
+    #tbl td {text-align: right; padding: 0 10px;}
+    #tbl tr {background-color: transparent;}
+
+    /* The Modal (background) */
+    .modal {
+      display: none; /* Hidden by default */
+      position: absolute; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      left: 0;
+      top: 0;
+      max-width: 480px;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: #474e5d;
+    }
+    .modal img {width: 80%; margin: 10%;}
+
+    @media only screen and (max-width: 500px) {
+      #hide {display:none;}
+      #premium {width: 16px; height: 16px; margin:10px 2px 0 2px;}
+      #prem    {width: 65px;}
+      #price   {width: 95px;}
+      body, input {font-size: 20px;} 
+      .nick, #nick {width:26px; height:26px; font-size: 20px;}
+    }
+  /* https://www.w3schools.com/colors/colors_picker.asp */
+  </style>
+</head>
+<body><div id="container"><table id="bag">
+<tr><td colspan="7">
+  <div class="l" id="qrcode"><img src="qr_icon2.png"></div>
+  <h2>Silver Barter</h2>
+  <a id="help" href="help.html" target="_blank" class="r"><img src="help-icon2.png"></a>
+</td></tr>
+<tr><td colspan="7">
+  <div class="a">
+    <a id="date" class="l" href="javascript:getSpot();">Get Spot Price</a>
+    <a id="dollar" href="javascript:setSpot();">$28 Spot Price</a>
+    <a id=fbp class="r" href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" target="_blank">Find Bullion Prices</a>
+  </div></td></tr>
+<tr><td colspan="7">
+  <div class="l">Gold:&nbsp;<input id="gold" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
+  <div class="r"><a class="nick">+</a><a id=nick style="">5¢</a><a class="nick toggled">-</a></div></td></tr>
+<tr><td colspan="7">
+  <div class="l">Spot:&nbsp;<input id="spot" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();"></div>
+  <div class="r">Amt:&nbsp;<input id="amt" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value="100.00"></div></td></tr>
+<tr><td colspan="7"><input type=button value="Silver Rounds" id="rnd"></td></tr>
+<tr class=coin><td><button>+</button></td><td id="dolr" class="face">1</td><td><button>-</button></td><td>×</td><td id="dolr_price">10.60</td><td>=</td><td id="dolr_total">10.60</td></tr>  
+<tr><td colspan="7"><input type=button value="Half-Dollars" id="ken"></td></tr>
+<tr class=coin><td><button>+</button></td><td id="half" class="face">1</td><td><button>-</button></td><td>×</td><td id="half_price">10.60</td><td>=</td><td id="half_total">10.60</td></tr>  
+<tr><td colspan="7"><input type=button value="Quarters" disabled id="qua"></td></tr>
+<tr class=coin><td><button>+</button></td><td id="quar" class="face">1</td><td><button>-</button></td><td>×</td><td id="quar_price">5.30</td><td>=</td><td id="quarter_total">5.30</td></tr>  
+<tr><td colspan="7"><input type=button value="Dimes" disabled id="dim"></td></tr>
+<tr class=coin><td><button>+</button></td><td id="dime" class="face">1</td><td><button>-</button></td><td>×</td><td id="dime_price">2.12</td><td>=</td><td id="dime_total">2.12</td></tr>  
+<tr><td colspan="7">
+  <div class="l">Face:<div id="face_total"></div></div>
+  <div>ozt:<div id="troy_ounce">2.1</div></div>
+  <div class="r">Total:<div id="grand_total"></div></div></td></tr>
+<tr><td colspan="7">
+  <hr>
+  <input type=button value="Premiums" id="prm"><br>
+  <hr></td></tr>
+<tr><td colspan="7">
+  <div class="l" id="vis">
+  $1<input type="radio" id="junk" name="type" value=".715" checked><label for="html">junk</label>
+    <input type="radio" id="doll" name="type" value=".7734"><label for="html">dollar</label>
+    <input type="radio" id="bull" name="type" value="1"><label for="html">BU</label>
+    <input type="radio" id="kilo" name="type" value="32.15"><label for="html">K</label>
+    <input type="radio" id="mbox" name="type" value="500"><label for="html">mbox</label></div></td></tr>
+<tr><td colspan="7">
+  <div class="l">
+    <label for="price">Price: </label>
+    <input id="price" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value=""></div>
+  <div id="premium">&nbsp;</div>
+  <div class="r">
+    <label for="prem">Prem: </label>
+    <input id="prem" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value=""></div></div>
+    <br>&nbsp;</td></tr>
+<tr><td colspan="7">
+  <div id="lst"></div></td></tr>
+</table></div>
+<div id="vp"></div>
+<div id="id01" class="modal">
+  <img src="Silver Barter QR2.png">
+</div>
+<script>
+let spot, amt, troy = .715, db = {
+    "dolr": {"fract": 1/troy, "count": 0, "price": 0, "total": 0},
+    "half": {"fract": .50, "count": 0, "price": 0, "total": 0},
+    "quar": {"fract": .25, "count": 0, "price": 0, "total": 0}, 
+    "dime": {"fract": .10, "count": 0, "price": 0, "total": 0}, 
+    "nick": {"fract": .05, "count": 0, "price": 0, "total": 0}  // no 90% nickels; a nickel is the LCD
+  },
+  nickel_count = () => db.dolr.count * 20 / troy
+                     + db.half.count * 10
+                     + db.quar.count * 5 
+                     + db.dime.count * 2,
+  premium = document.getElementById('premium'),
+  silver = document.getElementById("spot"),
+  grand = document.getElementById("grand_total"),
+// nick = document.getElementById("nick"),
+  gold = document.getElementById('gold'),
+  face = document.getElementById("face_total"),
+  prem = document.getElementById("prem"),
+  pric = document.getElementById("price"),
+  buy  = document.getElementById("amt"),
+  ozt  = document.getElementById("troy_ounce"),
+  rnd  = document.getElementById("rnd"),
+  ken  = document.getElementById("ken"),
+  prm  = document.getElementById("prm"),
+  pct  = document.getElementById("pct"),
+  vis  = document.getElementById("vis"),
+  today = () => new Date().toISOString().split('T')[0],
+  myHeaders = new Headers(),
+  requestOptions = {
+  method: 'GET',
+  headers: myHeaders,
+  redirect: 'follow'};
+
+if(localStorage.getItem("goldapi") === null){ 
+  localStorage.setItem("goldapi", JSON.stringify(
+    {"token":"", "date":"", "silver":"21.00", "gold":"1850.00"}
+  ));
+}
+const api = JSON.parse(localStorage.getItem("goldapi"));
+gold.value = parseFloat(api.gold).toFixed(2);
+silver.value = parseFloat(api.silver).toFixed(3);
+if(!api.token.match(/goldapi/)){
+  silver.classList.add("warn");
+  let e = document.getElementById("date"); // Get Spot Price url
+  e.href = "https://www.goldapi.io/";
+  e.target = "_blank";
+}
+
+// document.addEventListener("DOMContentLoaded", function() {
+  [rnd, ken].forEach(e => {
+    if(!(localStorage.getItem(e.value) === null)){
+      e.className = 'toggled';
+    }
+  });
+  render();
+// });
+
+async function getSpot(){
+  if(!api.token.match(/goldapi/)) return;
+  let response, data;
+  myHeaders.append("x-access-token", api.token);
+  myHeaders.append("Content-Type", "application/json");
+  response = await fetch(
+    "https://www.goldapi.io/api/XAU/USD", requestOptions);
+  data = await response.json();
+  console.log(data);
+  if('price' in data) 
+    api.gold = data["ask"]; 
+  response = await fetch(
+    "https://www.goldapi.io/api/XAG/USD", requestOptions);
+  data = await response.json();
+  console.log(data);
+  if('price' in data){
+    api.silver = data["ask"]; 
+    api.date = today();
+    localStorage.setItem("goldapi", JSON.stringify(api));
+    gold.value = parseFloat(api.gold).toFixed(2);
+    silver.value = parseFloat(api.silver).toFixed(3);
+    silver.classList.remove("warn");
+    render();
+  } // else console.log(data);
+}
+
+pric.onchange = function(event){
+  let factor = document.querySelector('input[name="type"]:checked').value,
+    price = pric.value.replace(/[^\d.]/g,''), pct;
+  clrPrem();
+  if(price.match(/^[0 ]?$/)){
+    return false;
+  }
+  if(premium.className == "toggled"){
+    pct = parseFloat((price/gold.value -1)*100);
+    if(pct < 0 || pct > 100)
+      pric.className = 'warning';
+  }else{
+    pct = parseFloat(price/(factor*silver.value) -1)*100;
+    if(pct < 0 || pct > 200)
+      pric.className = 'warning';
+  }
+  prem.value = pct >= 100 ? pct.toFixed(0) +"%": pct.toFixed(1) +"%";
+  pric.value = parseFloat(price).toFixed(2);
+  pric.blur(); // event.target
+  prem.blur(); 
+  // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
+  list_prems(parseFloat(factor));
+};
+
+prem.onchange = function(event){
+  let factor = document.querySelector('input[name="type"]:checked').value,
+    pct = prem.value.replace(/[^\d.]/g,''), p;
+  clrPrem();
+  if(pct.match(/^[0 ]?$/)){
+    return false;
+  }
+  pct = parseFloat(pct);
+  if(premium.className == "toggled"){
+    p = parseFloat(gold.value*(1+ pct/100));
+    pric.value = p >= 10000 ? p.toFixed(0) : p.toFixed(2);
+  }else{
+    pric.value = parseFloat(factor*silver.value*(1+ pct/100)).toFixed(2);
+  }
+
+  prem.value = pct >= 100 ? pct.toFixed(0) +"%": pct.toFixed(1) +"%";
+  prem.blur(); // event.target
+  // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
+  list_prems(parseFloat(factor));
+};
+
+function list_prems(factor){
+  let tbl='';
+  if(premium.className == "toggled"){
+    for(let i=0;i<20;i++){
+      j = 2.5 + i*.5;
+      tbl+=`<tr><td>${(gold.value*(1+j/100)).toFixed(2)}</td><td>${(gold.value*(j/100)).toFixed(2)}</td><td>${j.toFixed(1)}%</td></tr>\n`;
+    }
+  }else{
+    for(let i=0;i<28;i++){
+      j = 6 + i*2;
+      tbl+=`<tr><td>${(factor*silver.value*(1+ j/100)).toFixed(2)}</td><td>${(factor*silver.value*(j/100)).toFixed(2)}</td><td>${j.toFixed(1)}%</td></tr>\n`;
+    }
+  }
+  lst.innerHTML = `<table id=tbl><tr><th>Price</th><th>Prem</th><th>Pct</th></tr>\n${tbl}</table>`;
+}
+
+buy.onchange = function(event){
+  event.target.value = parseFloat(event.target.value.replace(/[^\d.]/g,'')).toFixed(2);
+  event.target.blur();
+  render();
+};
+
+gold.onchange = function(event){
+  gold.value = api.gold = parseFloat(event.target.value.replace(/[^\d.]/g,'')).toFixed(2);
+  localStorage.setItem("goldapi", JSON.stringify(api));
+  event.target.blur();
+};
+
+silver.onchange = function(event){
+  if(event.target.value.substr(0, 7) == "goldapi"){
+    api.token = event.target.value;
+    api.date = '';
+    localStorage.setItem("goldapi", JSON.stringify(api));
+    getSpot()
+      .catch(error => console.log('error', error));
+    event.target.value = api.silver;
+  }else{
+    event.target.value = api.silver = parseFloat(event.target.value.replace(/[^\d.]/g,'')).toFixed(3);
+    localStorage.setItem("goldapi", JSON.stringify(api));
+    render();
+  }
+  event.target.blur();
+};
+
+function render(sign){ // console.trace();
+  let nickel = sign === undefined ? 0 : sign * spot * troy * db.nick.fract;
+
+  if((sign > 0 && (nickel_count() == 0 || nickel_count() == 2)) ||
+     (sign < 0 && (nickel_count() == 4 || nickel_count() == 2))){ nickel *= 2 }
+  if( sign < 0 &&  nickel_count() == 0                         ){ nickel  = 0 }
+
+  amt  = parseFloat(buy.value) + nickel;
+  spot = parseFloat(silver.value);
+
+  if(rnd.className != 'toggled'){
+    db.dolr.count  = Math.floor((amt + .005) / spot);
+  }else{
+    db.dolr.count  = 0;
+  }
+
+  db.nick.count  = Math.max(0, Math.floor((amt - db.dolr.count * spot) / (spot * troy * db.nick.fract)));
+
+  if(db.dolr.count > 0 && db.nick.count < 4 && db.nick.count % 2 != 0){
+     db.dolr.count -= 1;
+     db.nick.count += 28;
+  }
+  db.quar.count  = Math.floor(db.nick.count / 5); 
+  db.nick.count -= Math.floor(db.quar.count * 5);
+  if(db.quar.count > 0 && db.nick.count % 2 != 0){
+     db.quar.count -= 1;
+     db.nick.count += 5;
+  }
+  db.dime.count  = Math.floor(db.nick.count / 2);  
+  db.nick.count -= Math.floor(db.dime.count * 2);
+
+  if(ken.className != 'toggled'){
+    db.half.count  = Math.floor(db.quar.count / 2);  
+    db.quar.count -= Math.floor(db.half.count * 2);
+  }else{
+    db.half.count  = 0;
+  }
+
+  document.querySelectorAll('.coin').forEach(e => fn(e));
+
+  grand.innerHTML = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
+  amt = nickel_count() * spot * troy * db.nick.fract + .005;
+  let f = amt / (spot * troy);
+  face.innerHTML = (f - db.dolr.count * (db.dolr.fract - 1)).toFixed(2); // adjust for rounds
+  ozt.innerHTML = (amt / spot).toFixed(2);
+  console.log(`amt: ${amt}, face: ${f.toFixed(2)}, nickel_count(): ${nickel_count()}`, db);
+};
+
+document.querySelectorAll("button").forEach(b => {
+  b.addEventListener("click", function(event){ 
+    if(fn(event.target)){
+
+      grand.innerHTML  = Object.values(db).reduce((grand, {total}) => grand + parseFloat(total), 0).toFixed(2);
+      amt = nickel_count() * spot * troy * db.nick.fract + .005;
+      buy.value = amt.toFixed(2);
+      let f = amt / (spot * troy);
+      face.innerHTML = (f - db.dolr.count * (db.dolr.fract -1)).toFixed(2);     
+      ozt.innerHTML = (amt / spot).toFixed(2);
+    }
+  });
+});
+
+function fn(e){
+  // console.log(e);
+  let td, inc;
+  if(e.tagName == "BUTTON"){ // called from + or - button
+    td  = e.parentNode.parentNode.querySelectorAll('td'),
+    inc = e.textContent == '+' ? 1 : -1;
+    // if + or - clicked and disabled then return false
+    if(td[1].id == 'dolr' && rnd.classList.value == 'toggled' ||
+       td[1].id == 'half' && ken.classList.value == 'toggled') return false;
+  }else{ // called from last render() stmt
+    td  = e.querySelectorAll('td'),
+    inc = 0;
+  }
+
+  let key = td[1].id;
+  db[key].count = Math.max(0, parseFloat(db[key].count + inc));
+  db[key].price = db[key].fract * spot * troy;
+  db[key].total = db[key].count * db[key].price;
+  td[1].innerHTML  = db[key].count;
+  td[4].innerHTML  = db[key].price.toFixed(3);
+  td[6].innerHTML  = db[key].total.toFixed(2);
+  // console.log(`key= ${key}:`,db[key]);
+  return true;
+}
+
+[...document.getElementsByClassName("nick")].forEach(e => {
+  e.addEventListener('click', function (event) {
+    let sign = event.target.classList.contains('toggled') ? -1 : 1;
+    render(sign);
+    amt = nickel_count() * spot * troy * db.nick.fract + .005;
+    buy.value = amt.toFixed(2);
+  });
+});
+
+function clrPrem(flag){
+    pric.className = '';
+    prem.className = '';
+    pric.value = '';
+    prem.value = '';
+  if(flag){
+    premium.className = '';
+    gold.className    = '';
+  }
+  lst.innerHTML = `<table id=tbl><tr><th>Price</th><th>Prem</th><th>Pct</th></tr></table>`;
+}
+clrPrem();
+
+document.querySelectorAll('input[name="type"]').forEach(e => {
+  e.addEventListener("click", function(event){ 
+    clrPrem(1);
+  });
+});
+
+premium.addEventListener('click', function (event) {
+  event.target.className = 'toggled' == event.target.className ? '' : 'toggled';
+  gold.className         = 'toggled' == gold.className         ? '' : 'toggled';
+  vis.style.visibility   = gold.className == 'toggled' ?   'hidden' : 'visible';
+  clrPrem();
+});
+
+rnd.addEventListener('click', function (event) {
+  if(event.target.className == 'toggled'){
+    event.target.className = '';
+    localStorage.removeItem(event.target.value);
+  }else{
+    event.target.className = 'toggled';
+    localStorage.setItem(event.target.value, 'toggled');
+  }
+  render();
+});
+
+ken.addEventListener('click', function (event) {
+  if(event.target.className == 'toggled'){
+    event.target.className = '';
+    localStorage.removeItem(event.target.value);
+  }else{
+    event.target.className = 'toggled';
+    localStorage.setItem(event.target.value, 'toggled');
+  }
+  render();
+});
+
+prm.addEventListener('click', function (event) {
+  event.target.className = event.target.className == 'toggled' ? '' : 'toggled';
+  lst.style.display      = event.target.className == 'toggled' ? 'none' : 'block';
+});
+
+function setSpot(){
+  silver.value = 27.972;
+  render();
+}
+
+document.getElementById("vp").innerHTML = window.innerWidth;
+
+let modal = document.getElementById('id01');
+document.getElementById("qrcode").addEventListener('click', function (event) {
+  modal.style.display='block';
+});
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target.parentNode == modal || event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+/*
+  https://stackoverflow.com/questions/114543/how-can-i-horizontally-center-an-element
+  https://codepen.io/alexandredees/pen/DbXggK
+  https://www.goldapi.io/dashboard - barter/misc/_token.txt
+  https://www.ngccoin.com/price-guide/coin-melt-values.aspx
+  https://www.cointalk.com/threads/715-or-7234-to-calculate-90.290085/
+  https://www.coinflation.com/coins/1932-1964-Silver-Washington-Quarter-Value.html
+  https://me-qr.com/
+  https://dev.to/dailydevtips1/javascript-loop-queryselectorall-results-j6
+  "D:\Offline\Apps\github pages\expedition\index.html"
+    [...document.querySelectorAll('.p')]
+      .filter(e => !/POI:/.test(e.textContent))
+      .forEach(e => e.style.display = "none");
+  Local Barter - 192.168.0.10:9000 - ipconfig /all
+*/
+</script>
+</body>
+</html>

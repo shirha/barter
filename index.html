@@ -148,7 +148,7 @@
   <div id="premium">&nbsp;</div>
   <div class="r">
     <label for="prem">Prem: </label>
-    <input id="prem" inputmode="numeric" pattern="[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value=""></div></div>
+    <input id="prem" inputmode="numeric" pattern="-?[0-9]*\.?[0-9]*" type="text" autocomplete="off" onfocus="this.select();" value=""></div></div>
     <br>&nbsp;</td></tr>
 <tr><td colspan="7">
   <div id="lst"></div></td></tr>
@@ -262,12 +262,14 @@ pric.onchange = function(event){
   pric.blur(); // event.target
   prem.blur(); 
   // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
-  list_prems(parseFloat(factor));
+  list_prems(parseFloat(factor),pct);
 };
 
 prem.onchange = function(event){
-  let factor = document.querySelector('input[name="type"]:checked').value,
-    pct = prem.value.replace(/[^\d.]/g,''), p;
+  let factor = document.querySelector('input[name="type"]:checked').value, p,
+    pct = prem.value.replace(/[^\d.-]/g,'');
+  // pct = prem.value.replace(!/-?[0-9]*\.?[0-9]*/, '');
+    console.log(prem.value,pct);
   clrPrem();
   if(pct.match(/^[0 ]?$/)){
     return false;
@@ -280,23 +282,28 @@ prem.onchange = function(event){
     pric.value = parseFloat(factor*silver.value*(1+ pct/100)).toFixed(2);
   }
 
+  if(pct < 0 || pct > 200)
+    pric.className = 'warning';
+
   prem.value = pct >= 100 ? pct.toFixed(0) +"%": pct.toFixed(1) +"%";
   prem.blur(); // event.target
   // console.log(`price=${price},factor=${factor},prem=${price/(factor*spot)}`);
-  list_prems(parseFloat(factor));
+  list_prems(parseFloat(factor),pct);
 };
 
-function list_prems(factor){
+function list_prems(factor,pct){
   let tbl='';
   if(premium.className == "toggled"){
-    for(let i=0;i<20;i++){
-      j = 2.5 + i*.5;
+    for(let i=0;i<25;i++){
+//    j = 2.5 + i*.5;
+      j = (pct<0 ? Math.round(pct) : 0) + i*.5;
       tbl+=`<tr><td>${(gold.value*(1+j/100)).toFixed(2)}</td><td>${(gold.value*(j/100)).toFixed(2)}</td><td>${j.toFixed(1)}%</td></tr>\n`;
     }
   }else{
-    for(let i=0;i<28;i++){
-      j = 6 + i*2;
-      tbl+=`<tr><td>${(factor*silver.value*(1+ j/100)).toFixed(2)}</td><td>${(factor*silver.value*(j/100)).toFixed(2)}</td><td>${j.toFixed(1)}%</td></tr>\n`;
+    for(let i=0;i<31;i++){
+//    j = 6 + i*2;
+      j = (pct<0 ? Math.round(pct) : 0) + i*2;
+      tbl+=`<tr><td>${(factor*silver.value*(1+j/100)).toFixed(2)}</td><td>${(factor*silver.value*(j/100)).toFixed(2)}</td><td>${j.toFixed(1)}%</td></tr>\n`;
     }
   }
   lst.innerHTML = `<table id=tbl><tr><th>Price</th><th>Prem</th><th>Pct</th></tr>\n${tbl}</table>`;
