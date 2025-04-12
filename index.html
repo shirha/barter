@@ -209,7 +209,7 @@
         </div>
 
         <div class="price-links">
-            <a href="javascript:fetchMetalPrices()" class="spot-price">Get Spot Price</a>
+            <a href="https://online.kitco.com/" class="spot-price" target="_blank">Get Spot Price</a>
             <a href="javascript:setDefaultSpot()" class="set-default-spot">$28 Spot Price</a>
             <a href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" 
                target="_blank">Find Bullion Prices</a>
@@ -692,7 +692,6 @@
 
             const calculator = new BarterCalculator();
             window.setDefaultSpot = () => calculator.setDefaultSpot();
-            window.fetchMetalPrices = () => console.log("Fetch metal prices not implemented yet");
             // for testing in colsole
             window.calculator = calculator;
             window.coinInventory = coinInventory;
