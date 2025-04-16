@@ -187,6 +187,22 @@
         #premInput {
             width: 80px;
         }
+
+        .spot-price {
+          white-space: nowrap;
+        }
+
+        .ask {
+            font-variant: small-caps;
+            color: black;
+            display: inline-block;
+            font-size: smaller;
+        }
+
+        .fbp {
+            color: black;
+            display: inline-block;
+        }
     /*
         @media (max-width: 500px) {
             body, button { font-size: 20px; }
@@ -209,10 +225,16 @@
         </div>
 
         <div class="price-links">
-            <a href="https://online.kitco.com/" class="spot-price" target="_blank">Get Spot Price</a>
-            <a href="javascript:setDefaultSpot()" class="set-default-spot">$28 Spot Price</a>
-            <a href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" 
-               target="_blank">Find Bullion Prices</a>
+            <a href="https://online.kitco.com/" class="spot-price" 
+                target="_blank">Kitco <div class=ask>Ask</div></a>
+            <div>
+                <a href="https://findbullionprices.com/p/90-junk-silver-coins-100-face-value-bag/" 
+                   target="_blank">Junk <div class=fbp>Find Bullion Prices </div></a>
+                <a href="https://findbullionprices.com/collection/Monster-Boxes/" 
+                   target="_blank">Mbox</a>
+            </div>
+            <a href="https://sdbullion.com/" class="set-default-spot" 
+                target="_blank">SD Bullion</a>
         </div>
 
         <div class="input-group">
