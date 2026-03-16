@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Copper Penny Calculator (1909–1982)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .calculator-card { max-width: 600px; margin: 2rem auto; }
+        .result-box { background-color: #e9f5e9; border: 2px solid #28a745; }
+        .history-item { font-size: 0.95rem; }
+        .clear-btn { cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="calculator-card card shadow">
+            <div class="card-header bg-success text-white text-center">
+                <h2>Bulk Copper Penny Calculator</h2>
+                <p class="mb-0">1909–1982 95% Copper Pennies – Face, Melt, & Quoted Premium over Melt</p>
+            </div>
+            <div class="card-body">
+                <!-- Copper Spot Price -->
+                <div class="mb-3">
+                    <label for="copperPrice" class="form-label fw-bold">Copper Spot Price ($/lb)</label>
+                    <div class="input-group">
+                        <input type="number" id="copperPrice" class="form-control" value="5.82" step="0.01" min="0">
+                        <span class="input-group-text">$ / lb</span>
+                    </div>
+                    <small class="text-muted">≈ $5.82/lb (March 16, 2026). Edit as needed.</small>
+                </div>
+
+                <!-- Input Type -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Quantity Type</label>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="type" id="typeCount" value="count" checked>
+                        <label class="btn btn-outline-success" for="typeCount">Count (in 1000s)</label>
+                        <input type="radio" class="btn-check" name="type" id="typeWeight" value="weight">
+                        <label class="btn btn-outline-success" for="typeWeight">Weight (lbs)</label>
+                        <input type="radio" class="btn-check" name="type" id="typeRolls" value="rolls">
+                        <label class="btn btn-outline-success" for="typeRolls">Rolls</label>
+                    </div>
+                </div>
+
+                <!-- Quantity + Total Quoted Price -->
+                <div class="row mb-4 g-3">
+                    <div class="col-md-6">
+                        <label id="quantityLabel" class="form-label fw-bold">Quantity</label>
+                        <div class="input-group">
+                            <input type="number" id="quantity" class="form-control" value="5" min="0" step="0.01">
+                            <span id="unitLabel" class="input-group-text">k</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="totalQuoted" class="form-label fw-bold">Total Quoted Price ($)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" id="totalQuoted" class="form-control" value="0.00" step="0.01" min="0">
+                            <span class="input-group-text">for this lot</span>
+                        </div>
+                        <small class="text-muted">e.g. $307 for 8k pennies, $40 for 10 rolls</small>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 mb-4">
+                    <button onclick="calculate()" class="btn btn-success flex-grow-1">Calculate</button>
+                    <a href="https://www.ebay.com/sch/i.html?_nkw=copper+pennies+5000" target="_blank" class="btn btn-outline-primary">View eBay Bulk Listings</a>
+                </div>
+
+                <!-- Results -->
+                <div id="results" class="result-box p-4 rounded mb-4 d-none">
+                    <h4 class="text-success text-center mb-3">Results</h4>
+                    <!-- Top row -->
+                    <div class="row text-center mb-3">
+                        <div class="col-3">
+                            <p class="mb-1 text-muted">Pennies</p>
+                            <h4 id="numPennies" class="text-dark">0</h4>
+                        </div>
+                        <div class="col-3">
+                            <p class="mb-1 text-muted">Weight</p>
+                            <h4 id="weightLbs" class="text-dark">0 lbs</h4>
+                        </div>
+                        <div class="col-3">
+                            <p class="mb-1 text-muted">Face Value</p>
+                            <h4 id="faceValue" class="text-success">$0.00</h4>
+                        </div>
+                        <div class="col-3">
+                            <p class="mb-1 text-muted">Melt Value</p>
+                            <h4 id="meltValue" class="text-success">$0.00</h4>
+                        </div>
+                    </div>
+                    <!-- Bottom row -->
+                    <hr>
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <p class="mb-1 text-muted">Total Quoted</p>
+                            <h5 id="totalQuotedDisp" class="text-primary">$0.00</h5>
+                        </div>
+                        <div class="col-4">
+                            <p class="mb-1 text-muted">Premium over Melt</p>
+                            <h5 id="premium" class="text-success">$0.00</h5>
+                        </div>
+                        <div class="col-4">
+                            <p class="mb-1 text-muted">Percent over Melt</p>
+                            <h5 id="percent" class="text-success">0.0%</h5>
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <small class="text-muted">Based on 3.11 g per pre-1982 penny (95% copper).</small>
+                    </div>
+                </div>
+
+                <!-- History -->
+                <div class="mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0">Last Calculations</h5>
+                        <button onclick="clearHistory()" class="btn btn-sm btn-outline-danger clear-btn">Clear All</button>
+                    </div>
+                    <ul id="historyList" class="list-group">
+                        <!-- Populated by JS -->
+                    </ul>
+                </div>
+            </div>
+            <div class="card-footer text-center text-muted small">
+                Note: Melting pennies is illegal in the United States.<br>
+                This tool estimates values only – for informational purposes.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constants for pre-1982 copper pennies
+        const PENNY_WEIGHT_G = 3.11;
+        const COPPER_PERCENT = 0.95;
+        const COPPER_G_PER_PENNY = PENNY_WEIGHT_G * COPPER_PERCENT;
+        const GRAMS_PER_LB = 453.59237;
+        const PENNIES_PER_LB = GRAMS_PER_LB / PENNY_WEIGHT_G; // ≈145.851
+
+        let history = [];
+
+        function loadHistory() {
+            const saved = localStorage.getItem('pennyHistory');
+            if (saved) {
+                history = JSON.parse(saved);
+                renderHistory();
+            }
+        }
+
+        function saveHistory() {
+            localStorage.setItem('pennyHistory', JSON.stringify(history));
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('historyList');
+            list.innerHTML = '';
+            if (history.length === 0) {
+                list.innerHTML = '<li class="list-group-item text-muted text-center">No calculations yet</li>';
+                return;
+            }
+            history.forEach((entry, index) => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item history-item d-flex justify-content-between align-items-center';
+                li.innerHTML = `
+                    <div>
+                        <strong>${entry.input}</strong><br>
+                        <small class="text-muted">${entry.date}</small><br>
+                        Face: <strong>$${entry.face.toFixed(2)}</strong> | 
+                        Melt: <strong>$${entry.melt.toFixed(2)}</strong> | 
+                        Quoted: <strong>$${entry.quoted.toFixed(2)}</strong> | 
+                        Prem: <strong>$${entry.prem.toFixed(2)}</strong> (${entry.percent.toFixed(1)}%)
+                    </div>
+                    <button onclick="deleteEntry(${index})" class="btn btn-sm btn-outline-danger">×</button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function addToHistory(inputStr, face, melt, quoted, prem, percent) {
+            const now = new Date();
+            const dateStr = now.toLocaleString();
+            history.unshift({
+                date: dateStr,
+                input: inputStr,
+                face: face,
+                melt: melt,
+                quoted: quoted,
+                prem: prem,
+                percent: percent
+            });
+            if (history.length > 10) history.pop();
+            saveHistory();
+            renderHistory();
+        }
+
+        function deleteEntry(index) {
+            history.splice(index, 1);
+            saveHistory();
+            renderHistory();
+        }
+
+        function clearHistory() {
+            if (confirm('Clear all calculation history?')) {
+                history = [];
+                saveHistory();
+                renderHistory();
+            }
+        }
+
+        function updateLabels() {
+            const type = document.querySelector('input[name="type"]:checked').value;
+            const qtyLabel = document.getElementById('quantityLabel');
+            const unitLabel = document.getElementById('unitLabel');
+            
+            if (type === 'count') {
+                qtyLabel.textContent = 'Number of thousands';
+                unitLabel.textContent = 'k';
+            } else if (type === 'weight') {
+                qtyLabel.textContent = 'Weight';
+                unitLabel.textContent = 'lbs';
+            } else if (type === 'rolls') {
+                qtyLabel.textContent = 'Number of rolls';
+                unitLabel.textContent = 'rolls';
+            }
+        }
+
+        function calculate() {
+            const type = document.querySelector('input[name="type"]:checked').value;
+            let qty = parseFloat(document.getElementById('quantity').value);
+            const copperPrice = parseFloat(document.getElementById('copperPrice').value) || 5.82;
+            const totalQuoted = parseFloat(document.getElementById('totalQuoted').value) || 0;
+
+            if (!qty || qty <= 0) {
+                alert('Please enter a valid positive quantity');
+                return;
+            }
+
+            let numPennies = 0;
+            let weightLbs = 0;
+
+            if (type === 'count') {
+                numPennies = qty * 1000;
+                weightLbs = numPennies / PENNIES_PER_LB;
+            } else if (type === 'weight') {
+                weightLbs = qty;
+                numPennies = qty * PENNIES_PER_LB;
+            } else if (type === 'rolls') {
+                numPennies = qty * 50;
+                weightLbs = numPennies / PENNIES_PER_LB;
+            }
+
+            const faceValue = numPennies * 0.01;
+
+            // Melt calculation
+            const totalCopperGrams = numPennies * COPPER_G_PER_PENNY;
+            const totalCopperLbs = totalCopperGrams / GRAMS_PER_LB;
+            const meltValue = totalCopperLbs * copperPrice;
+
+            // New Premium & Percent
+            const premium = totalQuoted - meltValue;
+            let percent = (meltValue !== 0) ? (premium / meltValue) * 100 : 0;
+
+            // Display
+            document.getElementById('numPennies').textContent = Math.round(numPennies).toLocaleString();
+            document.getElementById('weightLbs').textContent = weightLbs.toFixed(2) + ' lbs';
+            document.getElementById('faceValue').textContent = '$' + faceValue.toFixed(2);
+            document.getElementById('meltValue').textContent = '$' + meltValue.toFixed(2);
+            document.getElementById('totalQuotedDisp').textContent = '$' + totalQuoted.toFixed(2);
+            document.getElementById('premium').textContent = (premium >= 0 ? '+' : '') + '$' + premium.toFixed(2);
+            document.getElementById('percent').textContent = (percent >= 0 ? '+' : '') + percent.toFixed(1) + '%';
+            document.getElementById('premium').className = 'text-' + (premium >= 0 ? 'danger' : 'success') + ' h5';
+            document.getElementById('percent').className = 'text-' + (percent >= 0 ? 'danger' : 'success') + ' h5';
+            document.getElementById('results').classList.remove('d-none');
+
+            // History string
+            let inputStr = '';
+            if (type === 'count') inputStr = `${qty}k`;
+            else if (type === 'weight') inputStr = `${qty} lbs`;
+            else inputStr = `${qty} rolls`;
+            inputStr += ` @ $${totalQuoted.toFixed(2)} total`;
+
+            addToHistory(inputStr, faceValue, meltValue, totalQuoted, premium, percent);
+        }
+
+        // Event listeners
+        document.querySelectorAll('input[name="type"]').forEach(radio => {
+            radio.addEventListener('change', updateLabels);
+        });
+
+        window.onload = function() {
+            updateLabels();
+            loadHistory();
+            document.getElementById('quantity').addEventListener('keypress', e => { if (e.key === 'Enter') calculate(); });
+            document.getElementById('totalQuoted').addEventListener('keypress', e => { if (e.key === 'Enter') calculate(); });
+        };
+    </script>
+</body>
+</html>
