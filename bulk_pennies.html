@@ -25,7 +25,7 @@
                 <div class="mb-3">
                     <label for="copperPrice" class="form-label fw-bold">Copper Spot Price ($/lb)</label>
                     <div class="input-group">
-                        <input type="number" id="copperPrice" class="form-control" value="5.82" step="0.01" min="0">
+                        <input type="number" id="copperPrice" class="form-control" value="5.72" step="0.01" min="0">
                         <span class="input-group-text">$ / lb</span>
                     </div>
                     <small class="text-muted">≈ $5.82/lb (March 16, 2026). Edit as needed.</small>
@@ -162,9 +162,10 @@
             history.forEach((entry, index) => {
                 const li = document.createElement('li');
                 li.className = 'list-group-item history-item d-flex justify-content-between align-items-center';
+                        // <strong>${entry.input}</strong><br>
                 li.innerHTML = `
                     <div>
-                        <strong>${entry.input}</strong><br>
+                        ${entry.input}<br>
                         <small class="text-muted">${entry.date}</small><br>
                         Face: <strong>$${entry.face.toFixed(2)}</strong> | 
                         Melt: <strong>$${entry.melt.toFixed(2)}</strong> | 
@@ -269,18 +270,21 @@
             document.getElementById('totalQuotedDisp').textContent = '$' + totalQuoted.toFixed(2);
             document.getElementById('premium').textContent = (premium >= 0 ? '+' : '') + '$' + premium.toFixed(2);
             document.getElementById('percent').textContent = (percent >= 0 ? '+' : '') + percent.toFixed(1) + '%';
-            document.getElementById('premium').className = 'text-' + (premium >= 0 ? 'danger' : 'success') + ' h5';
-            document.getElementById('percent').className = 'text-' + (percent >= 0 ? 'danger' : 'success') + ' h5';
+            document.getElementById('premium').className = 'text-' + (percent >= 100 ? 'danger' : percent > 0 ? 'dark' : 'success') + ' h5';
+            document.getElementById('percent').className = 'text-' + (percent >= 100 ? 'danger' : percent > 0 ? 'dark' : 'success') + ' h5';
             document.getElementById('results').classList.remove('d-none');
 
             // History string
             let inputStr = '';
-            if (type === 'count') inputStr = `${qty}k`;
-            else if (type === 'weight') inputStr = `${qty} lbs`;
-            else inputStr = `${qty} rolls`;
-            inputStr += ` @ $${totalQuoted.toFixed(2)} total`;
+            if (type === 'count') {inputStr = `<strong>${qty}</strong>k`; }
+            else if (type === 'weight') inputStr = `<strong>${qty}</strong> lbs`;
+            else inputStr = `<strong>${qty}</strong> rolls`;
+            inputStr += ` @ <strong>$${totalQuoted.toFixed(2)}</strong> total` 
+                     +  ` | ${type === 'weight' ? '<strong>' + Math.round(numPennies) + '</strong> cnt' : '<strong>' + weightLbs.toFixed(2) + '</strong> lbs'}` 
+                     +  ` | <strong>$${(premium / weightLbs).toFixed(2)}</strong> over spot/lb | <strong>$${copperPrice}</strong> spot`;
 
             addToHistory(inputStr, faceValue, meltValue, totalQuoted, premium, percent);
+            console.log('totalQuoted=',totalQuoted,', weightLbs=',weightLbs,(totalQuoted / weightLbs).toFixed(2),(premium / weightLbs).toFixed(2))
         }
 
         // Event listeners
