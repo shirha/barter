@@ -28,7 +28,7 @@
                         <input type="number" id="copperPrice" class="form-control" value="5.72" step="0.01" min="0">
                         <span class="input-group-text">$ / lb</span>
                     </div>
-                    <small class="text-muted">≈ $5.82/lb (March 16, 2026). Edit as needed.</small>
+                    <small class="text-muted">≈ $5.72/lb (March 16, 2026). Edit as needed.</small>
                 </div>
 
                 <!-- Input Type -->
@@ -268,11 +268,11 @@
             document.getElementById('faceValue').textContent = '$' + faceValue.toFixed(2);
             document.getElementById('meltValue').textContent = '$' + meltValue.toFixed(2);
             document.getElementById('totalQuotedDisp').textContent = '$' + totalQuoted.toFixed(2);
-            document.getElementById('totalQuotedDisp').className = 'text-' + (percent >= 100 ? 'danger' : percent > 0 ? 'primary' : 'success') + ' h5';
             document.getElementById('premium').textContent = (premium >= 0 ? '+' : '') + '$' + premium.toFixed(2);
             document.getElementById('percent').textContent = (percent >= 0 ? '+' : '') + percent.toFixed(1) + '%';
-            // document.getElementById('premium').className = 'text-' + (percent >= 100 ? 'danger' : percent > 0 ? 'dark' : 'success') + ' h5';
-            // document.getElementById('percent').className = 'text-' + (percent >= 100 ? 'danger' : percent > 0 ? 'dark' : 'success') + ' h5';
+            document.getElementById('totalQuotedDisp').className = 'text-' + (percent >= 100 ? 'danger' : percent > 0 ? 'primary' : 'success') + ' h5';
+            document.getElementById('premium').className = 'text-' + (percent >= 100 ? 'danger' : percent > 0 ? 'dark' : 'success') + ' h5';
+            document.getElementById('percent').className = 'text-' + (percent >= 100 ? 'danger' : percent > 0 ? 'dark' : 'success') + ' h5';
             document.getElementById('results').classList.remove('d-none');
 
             // History string
