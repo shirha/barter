@@ -100,11 +100,11 @@
                         </div>
                         <div class="col-4">
                             <p class="mb-1 text-muted">Premium over Melt</p>
-                            <h5 id="premium" class="text-success">$0.00</h5>
+                            <h5 id="premium" class="text-dark">$0.00</h5>
                         </div>
                         <div class="col-4">
                             <p class="mb-1 text-muted">Percent over Melt</p>
-                            <h5 id="percent" class="text-success">0.0%</h5>
+                            <h5 id="percent" class="text-dark">0.0%</h5>
                         </div>
                     </div>
                     <div class="text-center mt-3">
@@ -268,10 +268,11 @@
             document.getElementById('faceValue').textContent = '$' + faceValue.toFixed(2);
             document.getElementById('meltValue').textContent = '$' + meltValue.toFixed(2);
             document.getElementById('totalQuotedDisp').textContent = '$' + totalQuoted.toFixed(2);
+            document.getElementById('totalQuotedDisp').className = 'text-' + (percent >= 100 ? 'danger' : percent > 0 ? 'primary' : 'success') + ' h5';
             document.getElementById('premium').textContent = (premium >= 0 ? '+' : '') + '$' + premium.toFixed(2);
             document.getElementById('percent').textContent = (percent >= 0 ? '+' : '') + percent.toFixed(1) + '%';
-            document.getElementById('premium').className = 'text-' + (percent >= 100 ? 'danger' : percent > 0 ? 'dark' : 'success') + ' h5';
-            document.getElementById('percent').className = 'text-' + (percent >= 100 ? 'danger' : percent > 0 ? 'dark' : 'success') + ' h5';
+            // document.getElementById('premium').className = 'text-' + (percent >= 100 ? 'danger' : percent > 0 ? 'dark' : 'success') + ' h5';
+            // document.getElementById('percent').className = 'text-' + (percent >= 100 ? 'danger' : percent > 0 ? 'dark' : 'success') + ' h5';
             document.getElementById('results').classList.remove('d-none');
 
             // History string
