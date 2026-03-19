@@ -109,7 +109,9 @@
                         </div>
                     </div>
                     <div class="text-center mt-3">
-                        <small class="text-muted">Based on 3.11 g per pre-1982 penny (95% copper).</small>
+                        <small class="text-muted">Based on 3.11 g per pre-1982 penny (95% copper).</small><br>
+                        <small class="text-muted">#2 "Composition" scrap at 25% below spot is </small>
+                        <small class="text-muted" id="scrap"></small>
                     </div>
                 </div>
 
@@ -272,9 +274,17 @@
             document.getElementById('premium').textContent = (premium >= 0 ? '+' : '') + '$' + premium.toFixed(2);
             document.getElementById('percent').textContent = (percent >= 0 ? '+' : '') + percent.toFixed(1) + '%';
             document.getElementById('totalQuotedDisp').className = 'text-' + (percent >= 100 ? 'danger' : percent > 0 ? 'primary' : 'success') + ' h5';
-            document.getElementById('premium').className = 'text-' + (percent >= 100 ? 'danger' : percent > 0 ? 'dark' : 'success') + ' h5';
-            document.getElementById('percent').className = 'text-' + (percent >= 100 ? 'danger' : percent > 0 ? 'dark' : 'success') + ' h5';
+            document.getElementById('premium').className = 'text-' + (percent >= 100 ? 'danger' : percent > -25 ? 'dark' : 'success') + ' h5';
+            document.getElementById('percent').className = 'text-' + (percent >= 100 ? 'danger' : percent > -25 ? 'dark' : 'success') + ' h5';
             document.getElementById('results').classList.remove('d-none');
+            document.getElementById('scrap').textContent = '$' + (meltValue * .75).toFixed(2);
+    /**
+        Based on scrap copper classification and current market data for 2026, 95% copper 
+        pennies (pre-1982) should generally be treated as #2 Copper Scrap or "Composition" 
+        scrap, rather than premium "#1" or "Bare Bright" copper. 
+        You should pay roughly 25% to 35% below the spot price of refined copper to account 
+        for the alloy content, refining costs, and dealer margins.—gemini
+    */
 
             // History string
             let inputStr = '';
